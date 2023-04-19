@@ -1,10 +1,68 @@
 # Postgres
 
+## Additional modules
+
+Here is a list of additional modules one ususally wants to have enabled, even on production:
+
+- [pg_stat_statements](https://www.postgresql.org/docs/current/pgstatstatements.html) to monitor queries, only has *low* overhead
+- [auto_explain](https://www.postgresql.org/docs/current/auto-explain.html) to log long running queries and get the explain plan for them
+
 ## Meta Informations
 
 ### System Catalogues / Meta tables
 
-See the postgres docs for [system catalogues](https://www.postgresql.org/docs/current/catalogs.html) and [system monitoring](https://www.postgresql.org/docs/15/monitoring-stats.html)
+See the postgres docs for [system catalogues](https://www.postgresql.org/docs/current/catalogs.html) and [system monitoring](https://www.postgresql.org/docs/current/monitoring-stats.html):
+
+Dynamic Statistics Views:
+
+|View Name |Description|
+|----------|-----------|
+|pg_stat_activity |One row per server process, showing information related to the current activity of that process, such as state and current query. See pg_stat_activity for details.|
+|pg_stat_replication |One row per WAL sender process, showing statistics about replication to that sender's connected standby server. See pg_stat_replication for details.|
+|pg_stat_wal_receiver |Only one row, showing statistics about the WAL receiver from that receiver's connected server. See pg_stat_wal_receiver for details.|
+|pg_stat_recovery_prefetch |Only one row, showing statistics about blocks prefetched during recovery. See pg_stat_recovery_prefetch for details.|
+|pg_stat_subscription |At least one row per subscription, showing information about the subscription workers. See pg_stat_subscription for details.|
+|pg_stat_ssl |One row per connection (regular and replication), showing information about SSL used on this connection. See pg_stat_ssl for details.|
+|pg_stat_gssapi |One row per connection (regular and replication), showing information about GSSAPI authentication and encryption used on this connection. See pg_stat_gssapi for details.|
+|pg_stat_progress_analyze |One row for each backend (including autovacuum worker processes) running ANALYZE, showing current progress. See Section 28.4.1.|
+|pg_stat_progress_create_index |One row for each backend running CREATE INDEX or REINDEX, showing current progress. See Section 28.4.2.|
+|pg_stat_progress_vacuum |One row for each backend (including autovacuum worker processes) running VACUUM, showing current progress. See Section 28.4.3.|
+|pg_stat_progress_cluster |One row for each backend running CLUSTER or VACUUM FULL, showing current progress. See Section 28.4.4.|
+|pg_stat_progress_basebackup |One row for each WAL sender process streaming a base backup, showing current progress. See Section 28.4.5.|
+|pg_stat_progress_copy |One row for each backend running COPY, showing current progress. See Section 28.4.6.|
+
+Collected Statistics Views:
+
+|View Name |Description|
+|----------|-----------|
+|pg_stat_archiver |One row only, showing statistics about the WAL archiver process's activity. See pg_stat_archiver for details.|
+|pg_stat_bgwriter |One row only, showing statistics about the background writer process's activity. See pg_stat_bgwriter for details.|
+|pg_stat_wal |One row only, showing statistics about WAL activity. See pg_stat_wal for details.|
+|pg_stat_database |One row per database, showing database-wide statistics. See pg_stat_database for details.|
+|pg_stat_database_conflicts |One row per database, showing database-wide statistics about query cancels due to conflict with recovery on standby servers. See pg_stat_database_conflicts for details.|
+|pg_stat_all_tables |One row for each table in the current database, showing statistics about accesses to that specific table. See pg_stat_all_tables for details.|
+|pg_stat_sys_tables |Same as pg_stat_all_tables, except that only system tables are shown.|
+|pg_stat_user_tables |Same as pg_stat_all_tables, except that only user tables are shown.|
+|pg_stat_xact_all_tables |Similar to pg_stat_all_tables, but counts actions taken so far within the current transaction (which are not yet included in pg_stat_all_tables and related views). The columns for numbers of live and dead rows and vacuum and analyze actions are not present in this view.|
+|pg_stat_xact_sys_tables |Same as pg_stat_xact_all_tables, except that only system tables are shown.|
+|pg_stat_xact_user_tables |Same as pg_stat_xact_all_tables, except that only user tables are shown.|
+|pg_stat_all_indexes |One row for each index in the current database, showing statistics about accesses to that specific index. See pg_stat_all_indexes for details.|
+|pg_stat_sys_indexes |Same as pg_stat_all_indexes, except that only indexes on system tables are shown.|
+|pg_stat_user_indexes |Same as pg_stat_all_indexes, except that only indexes on user tables are shown.|
+|pg_statio_all_tables |One row for each table in the current database, showing statistics about I/O on that specific table. See pg_statio_all_tables for details.|
+|pg_statio_sys_tables |Same as pg_statio_all_tables, except that only system tables are shown.|
+|pg_statio_user_tables |Same as pg_statio_all_tables, except that only user tables are shown.|
+|pg_statio_all_indexes |One row for each index in the current database, showing statistics about I/O on that specific index. See pg_statio_all_indexes for details.|
+|pg_statio_sys_indexes |Same as pg_statio_all_indexes, except that only indexes on system tables are shown.|
+|pg_statio_user_indexes |Same as pg_statio_all_indexes, except that only indexes on user tables are shown.|
+|pg_statio_all_sequences |One row for each sequence in the current database, showing statistics about I/O on that specific sequence. See pg_statio_all_sequences for details.|
+|pg_statio_sys_sequences |Same as pg_statio_all_sequences, except that only system sequences are shown. (Presently, no system sequences are defined, so this view is always empty.)|
+|pg_statio_user_sequences |Same as pg_statio_all_sequences, except that only user sequences are shown.|
+|pg_stat_user_functions |One row for each tracked function, showing statistics about executions of that function. See pg_stat_user_functions for details.|
+|pg_stat_xact_user_functions |Similar to pg_stat_user_functions, but counts only calls during the current transaction (which are not yet included in pg_stat_user_functions).|
+|pg_stat_slru |One row per SLRU, showing statistics of operations. See pg_stat_slru for details.|
+|pg_stat_replication_slots |One row per replication slot, showing statistics about the replication slot's usage. See pg_stat_replication_slots for details.|
+|pg_stat_subscription_stats |One row per subscription, showing statistics about errors. See pg_stat_subscription_stats for details.|
 
 ### Table sizes / relation sizes
 
@@ -254,7 +312,11 @@ grant all privileges on all tables in schema my_db to my_db2;
 
 ## Monitoring / Checkup
 
-For Performance and Checkups, see [postgres-checkup](https://gitlab.com/postgres-ai/postgres-checkup) and [postgres_dba](https://github.com/NikolayS/postgres_dba).
+For Performance and Checkups, see
+
+- [postgres-checkup](https://gitlab.com/postgres-ai/postgres-checkup)
+- [postgres_dba](https://github.com/NikolayS/postgres_dba).
+- [crunchydata playground high-level-performance-analytics](https://www.crunchydata.com/developers/playground/high-level-performance-analytics) for some statements
 
 ## Types
 
@@ -347,6 +409,18 @@ See EnterpriseDB - Tuning](https://www.enterprisedb.com/postgres-tutorials/intro
 ### Synchronous commit
 
 Turn `synchronous_commit=off`. The downside is that a client will receive a response that data is committed although it is not written to the WAL. In case of a crash, the client is in a false belief that his data is stored.
+
+### Cluster
+
+The [cluster command](https://www.postgresql.org/docs/current/sql-cluster.html) rewrites the whole table according to an index. While this takes time, this is highly efficient when bulk loading data, i.e. load a lot of rows a la
+
+```sql
+select * from my_table where id IN (sorted list)
+```
+
+Usually, Postgres will take a look in an index (provided there is one). The data sits there side by side,but points to different buffers in the heap (aka. the actual table). Thus, Postgres will have to read a lot of buffers. When the table is clustered, the searched rows all sit all side by side, consuming much less buffers and thus IO as well as memory in the buffer cache. See also this article from [cybertec](https://www.cybertec-postgresql.com/en/cluster-improving-postgresql-performance/).
+
+Note that the ordering in the heap is *not* maintained: Inserts and update will break the ordering. Consider using [fillfactor](https://www.postgresql.org/docs/current/sql-createtable.html) on the tables to enable `HOT` (heap only tuple) updates. Also see this [cybertec article](https://www.cybertec-postgresql.com/en/what-is-fillfactor-and-how-does-it-affect-postgresql-performance/).
 
 ## Starting and stopping postgres
 
@@ -453,3 +527,60 @@ Steps that worked for me on **`Ubuntu 8.04.2`** to remove **`postgres 8.3`**
     ```bash
     sudo deluser postgres
     ```
+
+## Docker
+
+Some example `docker-compose.yml`:
+
+```bash
+version: '3'
+
+services:
+  postgresql:
+    container_name: postgres15
+    image: postgres:15.2-bullseye
+    command:
+      [
+        "postgres",
+        "-c",
+        "log_checkpoints=on",
+        "-c",
+        "session_preload_libraries=auto_explain",
+        "-c",
+        "auto_explain.log_analyze=on",
+        "-c",
+        "auto_explain.log_buffers=on",
+        "-c",
+        "auto_explain.log_min_duration=1000", # ms
+        "-c",
+        "auto_explain.auto_explain.log_wal=on",
+        "-c",
+        "auto_explain.log_verbose=on",
+        "-c",
+        "auto_explain.log_nested_statements=on",
+        # Run CREATE EXTENSION IF NOT EXISTS pg_stat_statements; after first database setup
+        "-c",
+        "shared_preload_libraries=pg_stat_statements",
+        "-c",
+        "log_destination=stderr"
+      ]
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres15
+      # shared memory segments, see https://stackoverflow.com/questions/56751565/pq-could-not-resize-shared-memory-segment-no-space-left-on-device
+      # docker shortens the default to 64 mb
+      shm_size: 128mb
+    ports:
+      - "5432:5432"
+    # bind mounts are defined here, the usage of docker volumes is actually preferred
+    volumes:
+      - "~/Projects/postgres/pg15/data:/var/lib/postgresql/data"
+      - "~/Projects/postgres/pg15/logs:/logs"
+```
+
+## Trivia
+
+- the [crunchydata playground](https://www.crunchydata.com/developers/tutorials) allows for many interactive tutorials, including postgres in the browser.
+- [supabase](https://supabase.com/blog/postgres-wasm) has a public repo that allows you to run postgres in the browser via `npx`
