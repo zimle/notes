@@ -360,12 +360,11 @@ In descending effectivity
 2. Batch inserts of the form
 
     ```sql
-    insert into example (a, b, c) values (
-        ((a_1,b_1,c_1),
+    insert into example (a, b, c) values
+        (a_1,b_1,c_1),
         (a_2,b_2,c_2),
         ...,
         (a_n,b_n,c_n)
-        )
     ```
 
     Note that certain postgres drivers like jdbc allow for automatic rewriting of the usual batch insert into this form by setting the property `reWriteBatchedInserts=true`.
@@ -382,7 +381,7 @@ Drop indexes (except unique constraints) and rebuild them after loading is done.
 
 ### WAL and checkpointing
 
-- Checkpoints have high costs.......
+- Checkpoints have high costs, as they lead to rewriting full pages to the WAL
   Increase checkpoint_timeout leads to less WAL: If a block/page changes for the first time (e.g. adding a row), the whole page has to written to the WAL, all subsequent changes are incremental. The closer the checkpoints are, the more "first times" will appear.
   Run
 
@@ -396,7 +395,7 @@ SELECT pg_size_pretty(pg_current_xlog_location() - '0/00000000'::pg_lsn);
 SELECT * FROM pg_ls_waldir()
 ```
 
-- Avoid write amplification: Even a table with a primary key can lead to siginificant write overhead if the key is uuid vs bigint, see [On the impact of full-page writes](https://www.2ndquadrant.com/en/blog/on-the-impact-of-full-page-writes/ "Permanent Link: On the impact of full-page writes") As uuids are random, postgres likely has to touch a new leaf index leaf page every write as opposed to the bigint, where it is likely that we stay in the same leaf index leaf page. Thus, much more must be written to the wal (every time postgres dirties a page, the whole must be written to wal)
+- Avoid write amplification: Even a table with a primary key can lead to siginificant write overhead if the key is uuid vs bigint, see [On the impact of full-page writes](https://www.2ndquadrant.com/en/blog/on-the-impact-of-full-page-writes/ "Permanent Link: On the impact of full-page writes") As uuids are random, postgres likely has to touch a new leaf index leaf page every write as opposed to the bigint, where it is likely that we stay in the same leaf index leaf page. Thus, much more must be written to the wal (every time postgres dirties a page, the whole must be written to wal). A middle way would be to use sortable UUIDs, also see [Haki Benita citus conf 2023 talk](https://www.citusdata.com/cituscon/2023/schedule/#ondemand). An advice for efficient search on uuids is to use a [brin index with a bloom filter](https://www.postgresql.org/docs/current/brin-builtin-opclasses.html). They also work on other data types.
 
 ### Run analyze afterwards
 
@@ -584,3 +583,4 @@ services:
 
 - the [crunchydata playground](https://www.crunchydata.com/developers/tutorials) allows for many interactive tutorials, including postgres in the browser.
 - [supabase](https://supabase.com/blog/postgres-wasm) has a public repo that allows you to run postgres in the browser via `npx`
+- When doing prepared statements, postgres does not execute the generic plan but does some [sampling](https://www.cybertec-postgresql.com/en/tech-preview-how-postgresql-12-handles-prepared-plans/): For the first 5 times, it replans the query anew (custom plan) depending on the parameters. Afterwards, it again creates a custom plan and compares its estimated planner cost against the generic plan: If postgres thinks that they perform similar, it switches to the generic plan. If not, the comparison starts for the 7th plan etc. Starting from postgres 12, the parameter `plan_cache_mode = 'force_generic_plan'` forces postgres to directly use the generic plan.

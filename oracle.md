@@ -279,6 +279,14 @@ To [reorganize the tablespace](https://frankgerasch.de/2021/03/tablespace-reorga
     impdp USERID=system DIRECTORY=DATA_PUMP_DIR DUMPFILE=ts_%u.dmp LOGFILE=impdp_ts.log
     ```
 
+## Inner workings
+
+From the [oracle forum](https://forums.oracle.com/ords/apexds/post/undo-vs-redo-3114):
+
+- `UNDO` is stored in the database and is therefore accessible to transactional work - the creating transaction can use it for rollback, and other transactions or queries use it to recreate data blocks to the image at the point in time when the [other] query/transaction started (called Consistent Read or CR blocks);
+
+- `REDO` is stored outside of the database, in the redo log files, and is normally totally unaccessible to a transaction.
+
 ## Oracle Logs einrichten
 
 - Anleitung Oracle unter <https://docs.oracle.com/cd/B28359_01/java.111/b31224/diagnose.htm>
