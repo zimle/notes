@@ -21,3 +21,7 @@ According to the [gradle docs](https://docs.gradle.org/current/userguide/build_e
 3. gradle.properties in the project’s directory, then its parent project’s directory up to the build’s root directory, e.g. `my-project/gradle.properties`.s
 
 4. gradle.properties in Gradle installation directory, e.g. `/c/Tools/gradle/gradle-7.4/bin/gradle`. `9 mins 29.287 secs.`
+
+## Trivia
+
+- to specify the java version (e.g. when `JAVA_HOME` is older than Java version in project), one can specify it via the flag `-Dorg.gradle.java.home=myJavaPath`, e.g. `./gradlew build -Dorg.gradle.java.home=myJavaPath`.

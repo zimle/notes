@@ -310,6 +310,31 @@ If tables in my_db were created with user my_db and user my_db2 should be allowe
 grant all privileges on all tables in schema my_db to my_db2;
 ```
 
+## Configuration
+
+Postgres stores its configuration file normally under `/var/lib/postgresql/data/postgresql.conf` (can be find via `SHOW config_file`). Parameters can be [changed] via(<https://www.postgresql.org/docs/current/sql-altersystem.html>) `ALTER SYSTEM SET configuration_parameter`.
+
+Note that there might be other configuration files like [postgresql.auto.conf](https://pgpedia.info/p/postgresql-auto-conf.html). auto.conf is a configuration file with the same format as postgresql.conf, but which is located in the data directory and is managed by PostgreSQL itself (via the `ALTER SYSTEM` command) or client applications (e.g. pg_basebackup in PostgreSQL 12 and later). Normally it should not be edited manually.
+
+`postgresql.auto.conf` is always evaluated last, so configuration settings stored here will always override settings in other files.
+
+Summary:
+
+```sql
+-- get file path of config file
+show config_file;
+-- change configuration
+alter system set configuration_parameter to ...;
+-- reload settings: note that there are parameters like 'shared_preloaded_libraries' that are update only when restart
+select pg_reload_conf();
+-- see all configurations of user:
+show all;
+select * from pg_settings;
+-- settings and in which file they reside
+table pg_file_settings;
+select * from pg_file_settings;
+```
+
 ## Monitoring / Checkup
 
 For Performance and Checkups, see

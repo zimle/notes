@@ -188,7 +188,9 @@ TRUNC(SYSDATE + DBMS_RANDOM.value(0,366)) -- random DATE OVER NEXT year
 FROM dual;
 ```
 
-## Parallel statement
+## Parallel
+
+### Parallel statement
 
 When trying to insert in parallel, one must allow the session to use parallel statements. Else, only a single writer process is used. Furthermore, one should rollback on error and exit the script. The SQL-Developer per defaults runs all other statements. Sensible defaults are:
 
@@ -205,6 +207,17 @@ Oracle can only [delete and update in parallel](https://www.oreilly.com/library/
 ```sql
 INSERT /*+ PARALLEL(employees) */ INTO employees
 SELECT /*+ PARALLEL(ACME_EMP) */ *  FROM ACME_EMP;
+```
+
+### Parallel index creation
+
+```sql
+CREATE INDEX my_index ON
+    my_table(a, b)
+-- LOCAL / GLOBAL keyword if necessary
+PARALLEL (DEGREE 16);
+
+alter index my_index parallel noparallel;
 ```
 
 ## Tablespaces / Disk usage
@@ -491,7 +504,7 @@ docker-compose docker cp /mnt/path/to/FULL_EXPORT.dmp oracle193:/opt/oracle/admi
 provided all paths already exist ( `select * from dba_directories` ). Then run `docker exec -it containername bash` and use `impdp` as you normally would.
 
 ```bash
-impdp \"sys/Managerin1@MY_DB as sysdba\"  directory=DATA_PUMP_DIR full=Y dumpfile=FULL_EXPORT.dmp logfile=full.log
+impdp system/pwd@MY_DB  directory=DATA_PUMP_DIR full=Y dumpfile=FULL_EXPORT.dmp logfile=full.log
 ```
 
 ## Create user /schema
@@ -521,7 +534,7 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     1. make an export a la
 
         ```bash
-        expdp \"sys/password@my_db as sysdba\" \
+        expdp system/password@my_db \
         schemas=my_schema\
         DIRECTORY=DATA_PUMP_DIR\
         DUMPFILE=my_schema.dmp
@@ -532,7 +545,7 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     3. import the schema a la
 
         ```bash
-        impdp \"sys/password@my_db as sysdba\" schemas=my_schema.dmp directory=DATA_PUMP_DIR DUMPFILE=my_schema.dmp
+        impdp system/password@my_db schemas=my_schema.dmp directory=DATA_PUMP_DIR DUMPFILE=my_schema.dmp
         ```
 
 - newlines are created by appending `chr(10)` (newline unix) or `chr(13)` (newline windows), i.e. `'newxt word in' || chr(10) || 'newline`.

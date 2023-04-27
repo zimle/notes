@@ -11,12 +11,12 @@
 
 ```bash
 # export of schema
-# instead of userid=..., standard could be \"sys/pwd@MY_DB as sysdba\", note the quoting
 expdp USERID=USER_WITH_SUFFICIENT_GRANTS\ # needs access to schema and directory specified below
     schemas=EXPORT_TARGET\
     DIRECTORY=DATA_PUMP_DIR\
     DUMPFILE=basis.dmp\
     REUSE_DUMPFILES=Y\
+    EXCLUDE=STATISTICS\ # because it has a big performance penalty
     logfile=DATA_PUMP_DIR:basis.log
 
 # import of all tables
@@ -25,6 +25,7 @@ impdp USERID=USER_WITH_SUFFICIENT_GRANTS\ # needs access to directory below
     #REMAP_TABLESPACE=TS_SOURCE:TS_HEAD
     DIRECTORY=DATA_PUMP_DIR\
     DUMPFILE=basis.dmp\
+    EXCLUDE=STATISTICS\ # because it has a big performance penalty
     logfile=DATA_PUMP_DIR:import_basis.log\
 ```
 

@@ -29,6 +29,16 @@ Git has now (since git 2.30.0) a dedicated [maintenance](https://git-scm.com/doc
 git maintenance run --task=commit-graph --task=gc --task=incremental-repack --task=loose-objects --task=pack-refs --task=prefetch
 ```
 
+## Configuration
+
+Typically, the global `.gitconfig` resides in the home folder. If one wants to make project specific configuartions (like email address in the commit), one can still use the `--local` flag like this
+
+```bash
+git config --local user.email my.special@address.com
+```
+
+This adds to the local `.git/config` file of the repository.
+
 ## Useful features
 
 ### Fix a commit that is only local
@@ -48,10 +58,33 @@ fixup 54e1a99 fixup! Commit2
 pick b42d293 Commit3
 ```
 
+### Fix the commit message of an older commit not pushed yet
+
+From [github](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/changing-a-commit-message):
+
+```bash
+# rebase up to the last commit you want to edit, e.g. 3
+git rebase -i HEAD~3
+# for each commit you want to change the message for, replace 'pick' with 'reword'
+# change the messages
+# congrats, you are done
+```
+
 ## Caveats
 
 - `git log .` might 'skip' commits. Simply use `git log` or - to check where a certain commit appears - run
 
     ```bash
     git branch -a --contains <commit-sha>
+    ```
+
+## Trivia
+
+- Sometimes, files were deleted and created anew instead of using `git mv`, loosing references. For such cases, it is sometime more convenient to check out a specifc commit and then undo this, e.g.:
+
+    ```bash
+    # get in detached state and sneak a consistent snapshot at the time of a specifc commit
+    git checkout rev_id_i_want_to_see
+    # undo the detached state and get back to the pointer of your current branch
+    git switch -
     ```
