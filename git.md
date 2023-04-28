@@ -31,13 +31,27 @@ git maintenance run --task=commit-graph --task=gc --task=incremental-repack --ta
 
 ## Configuration
 
-Typically, the global `.gitconfig` resides in the home folder. If one wants to make project specific configuartions (like email address in the commit), one can still use the `--local` flag like this
+- To see every configuration set, its scope and where it is located, use
 
-```bash
-git config --local user.email my.special@address.com
-```
+    ```bash
+    git config --list --show-origin --show-scope
+    ```
 
-This adds to the local `.git/config` file of the repository.
+- To unset a specified option (e.g. hookspath), use
+
+    ```bash
+    git config --local --unset core.hookspath
+    ```
+
+- Typically, the global `.gitconfig` resides in the home folder. If one wants to make project specific configuartions (like email address in the commit), one can still use the `--local` flag like this
+
+    ```bash
+    git config --local user.email my.special@address.com
+    ```
+
+    This adds to the local `.git/config` file of the repository.
+
+- Since [git 2.9 2016](https://stackoverflow.com/questions/14073053/find-path-to-git-hooks-directory-on-the-shell), one can config where the git hooks folder is (default `.git/hook`). Simply search in `git config --list --show-origin --show-scope` after the hook keyword
 
 ## Useful features
 
