@@ -7,8 +7,10 @@ The following commands might prove useful:
 ```bash
 # finding non-ascii characters, might not work on git bash
 # grep can be replaced by ripgrep (https://github.com/BurntSushi/ripgrep)
-grep --color='auto' -n "^[[:space:]]" my_file.md
+grep --color='auto' -n "^[[:ascii:]]" my_file.md
 # removing all non-ascii and control characters except for
 # line feed \n and carriage return \r (for those Windows users)
 cat my_file.md | tr -cd '[:print:]\r\n'
 ```
+
+Consider using this as a [pre-commit hook](git-hooks/pre-commit), especially when just copying and pasting from websites and therby introducing non-asciis by accident.

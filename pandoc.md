@@ -15,7 +15,7 @@ pandoc -s -r html https://docs.oracle.com/en/database/oracle/oracle-database/19/
 
 From all the [convert options](https://pandoc.org/chunkedhtml-demo/3.1-general-options.html), here are the [markdown variants](https://pandoc.org/MANUAL.html#markdown-variants):
 
-- `markdown` (Pandoc’s Markdown)
+- `markdown` (Pandoc's Markdown)
 - `markdown_mmd` (MultiMarkdown)
 - `markdown_phpextra` (PHP Markdown Extra)
 - `markdown_strict` (original unextended Markdown)

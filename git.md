@@ -49,9 +49,19 @@ git maintenance run --task=commit-graph --task=gc --task=incremental-repack --ta
     git config --local user.email my.special@address.com
     ```
 
-    This adds to the local `.git/config` file of the repository.
+    This adds to the local `.git/config` file of the repository. Note that the `--local` flag is the [default](https://git-scm.com/docs/git-config).
 
 - Since [git 2.9 2016](https://stackoverflow.com/questions/14073053/find-path-to-git-hooks-directory-on-the-shell), one can config where the git hooks folder is (default `.git/hook`). Simply search in `git config --list --show-origin --show-scope` after the hook keyword
+
+## Hooks
+
+Hooks are a wonderful way to shift quality "to the left". There are various hooks availbale, and on can see examples for them in the folder `.git/hooks`. Removing the suffix `.sample` lets git execute these hooks. E.g., by default, git looks for the file `.git/hooks/pre-commit` [before](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) one is forwarded to typing the commit message.
+
+On the other hand, to enforce the quality checks for all team members, the pre-commit should be version controlled. To achieve this, one can create a `git-hooks` folder in the repository with all relevant hooks. To ensure that they are applied, run
+
+```bash
+git config core.hooksPath git-hooks
+```
 
 ## Useful features
 

@@ -578,15 +578,15 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
 
     ```sql
     WITH
-        FUNCTION my_function (
-            a_string          IN VARCHAR2,
-            a_number          IN NUMBER
-        ) RETURN VARCHAR2 IS
-            res VARCHAR2(4);
-        BEGIN
-            -- logic
-            RETURN res;
-        END;
+        FUNCTION my_function (
+            a_string         IN VARCHAR2,
+            a_number         IN NUMBER
+        ) RETURN VARCHAR2 IS
+            res VARCHAR2(4);
+        BEGIN
+        -- logic
+            RETURN res;
+        END;
     my_cte AS (
     ...
     )

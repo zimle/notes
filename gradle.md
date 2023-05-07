@@ -42,7 +42,7 @@ According to the [gradle docs](https://docs.gradle.org/current/userguide/build_e
 
 2. gradle.properties in [GRADLE_USER_HOME](https://docs.gradle.org/current/userguide/directory_layout.html#dir:gradle_user_home) directory, e.g. `~/.gradle`
 
-3. gradle.properties in the project’s directory, then its parent project’s directory up to the build’s root directory, e.g. `my-project/gradle.properties`.s
+3. gradle.properties in the project's directory, then its parent project's directory up to the build's root directory, e.g. `my-project/gradle.properties`.s
 
 4. gradle.properties in Gradle installation directory, e.g. `/c/Tools/gradle/gradle-7.4/bin/gradle`. `9 mins 29.287 secs.`
 

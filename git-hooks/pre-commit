@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# check for non-ascii characters
+# it assumes to have ripgrep (https://github.com/BurntSushi/ripgrep) in the path
+# but should also work with grep on unix (sadly, not git bash on windows)
+
+if rg -q "[^[:ascii:]]"
+then
+echo "Found non-ascii character:"
+
+rg -n "[^[:ascii:]]"
+
+cat <<\EOF
+To reproduce the results, run
+
+    rg "[^[:ascii:]]"
+
+to find the lines.
+In case you want just to delete them, consider running
+
+    tr -cd '[:print:]\r\n' < old.md > new.md && mv new.md old.md
+
+EOF
+    exit 1
+fi

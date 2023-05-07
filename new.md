@@ -20,7 +20,7 @@ data Shape = Circle Float Float Float | Rectangle Float Float Float Float
 
 Note that value constructors are functions returning the specified type
 
-```bash
+```
 ghci>:t True
 True :: Bool
 ghci>:t Circle
@@ -291,11 +291,11 @@ Nothing
 
 # exported in Control.Applicative: Shorthand for for first lifting function
 # then applying applicative functor
-(<$>) :: (Functor f) => (a -> b) -> f a -> f b  
-f <$> x = fmap f x
+(<$>)::(Functorf)=>(a->b)->fa->fb
+f<$>x=fmapfx
 # example for <$>
-1.  ghci> (++) <$> Just "johntra" <*> Just "volta"  
-2.  Just "johntravolta"
+1.  ghci>(++)<$>Just"johntra"<*>Just"volta"
+2.  Just"johntravolta"
 ```
 
 ### Monad
@@ -354,17 +354,17 @@ justH = do
 The `state monad` resides in the package `Control.Monad.State` and is defined as
 
 ```haskell
-newtype State s a = State { runState :: s -> (a,s) }
+newtypeStatesa=State{runState::s->(a,s)}
 ```
 
 It is useful for stateful objects like stacks, random generators that are not allowed to be manipulated by Haskell due to its pureness. When calling a function that also manipulates the state (like pop), one has to return the result *and* the current state (a new object). This quickly becomes tedious, so one wraps it into State Monads:
 
 ```haskell
-instance Monad (State s) where  
-    return x = State $ \s -> (x,s)  
-    (State h) >>= f = State $ \s -> let (a, newState) = h s  
-                                        (State g) = f a  
-                                    in  g newState
+instanceMonad(States)where
+returnx=State$\s->(x,s)
+(Stateh)>>=f=State$\s->let(a,newState)=hs
+    (Stateg)=fa
+ingnewState
 ```
 
 ### MonadPlus

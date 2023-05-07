@@ -481,9 +481,9 @@ pg_ctl -D "C:\Program Files\PostgreSQL\9.6\data" restart
 
 Another way:
 
-- Open Run Window by `Winkey + R`
-- Type `services.msc`
-- Search Postgres service based on version installed.
+- Open Run Window by `Winkey + R`
+- Type `services.msc`
+- Search Postgres service based on version installed.
 - Click stop, start or restart the service option.
 
 ## Links
