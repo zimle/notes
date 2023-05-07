@@ -200,7 +200,7 @@ alter table t alter column b set compression lz4;
 - [compression](https://www.dbi-services.com/blog/toasting-in-postgresql-lets-see-it-in-action/)
 - [toasting strategies in postgres part 1](https://www.dbi-services.com/blog/toasting-strategies-in-postgresql/)
 - [toasting in postgres, toast tables part 2](https://www.dbi-services.com/blog/toasting-in-postgresql-toast-tables/)
-- [TOASTing in PostgreSQL, let’s see it in action part 3](https://www.dbi-services.com/blog/toasting-in-postgresql-lets-see-it-in-action/)
+- [TOASTing in PostgreSQL, let's see it in action part 3](https://www.dbi-services.com/blog/toasting-in-postgresql-lets-see-it-in-action/)
 
 ## Cleanup, Vacuum, table sizes, disk space
 
@@ -223,7 +223,7 @@ VACUUM
 ```
 
 From [cybertec](https://www.cybertec-postgresql.com/en/vacuum-does-not-shrink-my-postgresql-table/)
-> `VACUUM` is actively looking for rows which are not seen by anyone anymore. Those rows can be in the middle of the data file somewhere. What happens is that `VACUUM` allows PostgreSQL to reuse that space – however, it does not return that space to the operating system. It can’t do that because if you have a datafile that is 1 GB in size, you can’t simply return “the middle of the file” to the operating system in case it is empty – there is no file system operation which supports that. Instead, PostgreSQL has to remember this free space and reuse it later.
+> `VACUUM` is actively looking for rows which are not seen by anyone anymore. Those rows can be in the middle of the data file somewhere. What happens is that `VACUUM` allows PostgreSQL to reuse that space - however, it does not return that space to the operating system. It can't do that because if you have a datafile that is 1 GB in size, you can't simply return "the middle of the file" to the operating system in case it is empty - there is no file system operation which supports that. Instead, PostgreSQL has to remember this free space and reuse it later.
 
 An Exception is the case where every row is deleted (like in `Truncate`).
 
@@ -297,10 +297,12 @@ Then, as admin in psql, do the following:
 ```sql
 -- as postgres or superuser or dba or whatever called
 create database my_db;
-create user my_db with encrypted password 'pwd';
-grant all privileges on database my_db to my_db;
+create user my_user with encrypted password 'pwd';
+grant all privileges on database my_db to my_user;
+-- bad habit: if one wants to allow create table on public schema
+grant create on schema public to my_user;
 -- as user my_db in database my_db
-create schema my_db;
+create schema my_user;
 ```
 
 If tables in my_db were created with user my_db and user my_db2 should be allowed to access these tables:
@@ -488,7 +490,7 @@ Another way:
 
 ### Books
 
-- [postgrespro](https://postgrespro.com/blog/pgsql/5969741)
+- [posgrespro](https://postgrespro.com/blog/pgsql/5969741)
 
 ## wal
 

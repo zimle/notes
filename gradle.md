@@ -1,16 +1,40 @@
 # Gradle
 
-Enable caching in `GRADLE_USER_HOME`, e.g. `~/.gradle/gradle.properties`
+Most basic issues can be achieved by using the help functions:
 
-```gradle
-org.gradle.caching=true
+```bash
+# get overview of help functions
+./gradlew help
+# get help on cli functionality
+./gradlew --help
+# get overview of available tasks
+./gradlew tasks
+# get help on specific task
+gradlew help --task <task>
+```
+
+## Start / stop application
+
+```bash
+# E.g. start Spring Boot application
+./gradlew bootRun
+# stop application
+./gradlew -stop
 ```
 
 ## Linting
 
 [Nebula](https://github.com/nebula-plugins/gradle-lint-plugin) is recommended by [gradle](https://docs.gradle.org/current/userguide/performance.html).
 
-## Build precedence
+## Settings
+
+Enable caching in `GRADLE_USER_HOME`, e.g. `~/.gradle/gradle.properties`
+
+```gradle
+org.gradle.caching=true
+```
+
+### Build precedence
 
 According to the [gradle docs](https://docs.gradle.org/current/userguide/build_environment.html#sec:gradle_configuration_properties), gradle unintuitively looks in the following order:
 

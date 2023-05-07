@@ -13,7 +13,7 @@ Also see
 
 ## List of git configurations in current repo
 
-To see all valid git configurations in the current, run
+To see all valid git configurations in the current repository, run
 
 ```bash
 git config --list --show-origin --show-scope
@@ -82,6 +82,14 @@ git rebase -i HEAD~3
 # for each commit you want to change the message for, replace 'pick' with 'reword'
 # change the messages
 # congrats, you are done
+```
+
+### Fix the author / email address
+
+If the email address in your last commit is not correct or wrong or not recognized by your upstream server (like checking it with your Active Directory email address that is an old one), simply change the settings in your `~/.gitconfig` (or according to `git config --list --show-origin --show-scope`) and run
+
+```bash
+git commit --amend --reset-author --no-edit
 ```
 
 ## Caveats

@@ -22,6 +22,15 @@ Tools
 - `jps` like the unix `ps` lists all java process ids currently running
 - `jstack` prints java stacktraces
 
+## Heap Dumps
+
+To [create a heap dump](https://www.baeldung.com/java-heap-dump-capture) the easiest way is to use `jcmd`:
+
+```bash
+# use jps to get PID
+jcmd myPID GC.heap_dump /path/to/where/i/store/heap.hprof
+```
+
 ### From terminal
 
 One-liner  to accumulate stack informations for profiling form [stack overflow](https://stackoverflow.com/questions/27228972/how-to-get-java-profiling-dump-for-creating-flame-graphs-on-the-mac)
@@ -44,3 +53,12 @@ iconv -f iso-8859-1 -t utf-8 my_jstack.folded > my_jstack_utf8.folded
 # alltogether example
 ~/projects/FlameGraph/stackcollapse-jstack.pl stack.txt | iconv -f iso-8859-1 -t utf-8 > stack.folded && ~/projects/FlameGraph/flamegraph.pl --color=java stack.folded > stack.svg
 ```
+
+## Trivia
+
+- to set the Java Home Path for at least Eclipse projects like the IDE or Memory Analyzer, use the `vm` argument in the `ini` file:
+
+    ```bash
+    -vm
+    C:\Tools\jdk-17.0.2\bin\javaw.exe
+    ```
