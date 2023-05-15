@@ -7,7 +7,37 @@ The most important `psql` command is
  \?
  ```
 
-This enables for searching the right command.
+This enables for searching the right command. See also the [manual](https://www.postgresql.org/docs/current/app-psql.html).
+
+## Pager
+
+`psql` per default uses the pager defined in the environment variables, which usually is less on Linux. When querying many columns which dont fit the screen, the output gets messy for the first columns. Scrolling to the right by pressing the right arrow gives a good result. However, the view gets messy when jumping back via left arrow key.
+
+To circumvent this, either
+
+- use `export PAGER='less -S' (bad, because it effects other programs)
+- within a `psql` session, set `\setenv PAGER 'less -S'`
+- create a `.psqlrc` file in your home directory if not existent and append `\setenv PAGER 'less -S'`. Note that comments in `.psqlrc` are done via `--`
+
+## Autocommit
+
+/mnt/d/projects/gb-reengineering/spring-batch-prototype/env/sql/schema-postgresql.sql
+
+```sql
+-- see within psql session whether autocommit is on
+\echo :AUTOCOMMIT
+-- within psql session set autocommit off or on
+\set AUTOCOMMIT off
+```
+
+## Executing sql files
+
+```sql
+-- from bash
+psql -h localhost -U my_user -d my_db -f my/relative/or/absolute/path.sql
+-- from session
+\i /my/absolute/path
+```
 
 ## Trivia
 

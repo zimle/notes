@@ -33,6 +33,31 @@ To profile changes, either use `zsh -xv` to enable `xtracing` and verbose `outpu
 awk -F ";" '$1 = $2'
 ```
 
+## sed
+
+A list of literal sets from [stackexchange](https://unix.stackexchange.com/questions/102008/how-do-i-trim-leading-and-trailing-whitespace-from-each-line-of-some-output):
+
+```quote
+[[:alnum:]]  - [A-Za-z0-9]     Alphanumeric characters
+[[:alpha:]]  - [A-Za-z]        Alphabetic characters
+[[:blank:]]  - [ \t]           Space or tab characters only
+[[:cntrl:]]  - [\x00-\x1F\x7F] Control characters
+[[:digit:]]  - [0-9]           Numeric characters
+[[:graph:]]  - [!-~]           Printable and visible characters
+[[:lower:]]  - [a-z]           Lower-case alphabetic characters
+[[:print:]]  - [ -~]           Printable (non-Control) characters
+[[:punct:]]  - [!-/:-@[-`{-~]  Punctuation characters
+[[:space:]]  - [ \t\v\f\n\r]   All whitespace chars
+[[:upper:]]  - [A-Z]           Upper-case alphabetic characters
+[[:xdigit:]] - [0-9a-fA-F]     Hexadecimal digit characters
+```
+
+For example, to remove leading and trailing whitespace, use
+
+```bash
+sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
+```
+
 ## Trivia
 
 - find all classes-folder (windows) and using [rust version of find](https://github.com/sharkdp/fd):

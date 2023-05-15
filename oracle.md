@@ -653,3 +653,5 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     -- see last query plan (estimated, not the executed one)
     select * from table(dbms_xplan.display(format=>'ALL'));
     ```
+
+- [FAQ](https://www.oracle.com/database/technologies/faq-jdbc.html) about oracle jdbc drivers seems to be very complete

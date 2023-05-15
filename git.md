@@ -63,6 +63,29 @@ On the other hand, to enforce the quality checks for all team members, the pre-c
 git config core.hooksPath git-hooks
 ```
 
+## git log
+
+From [stackoverflow](https://stackoverflow.com/questions/4468361/search-all-of-git-history-for-a-string):
+
+```bash
+# find any commit that added or removed the string password, see also git log docs for 'pickaxe'
+git log -S password
+# looks for differences whose added or removed line matches the given regular expression,
+# see also git log docs for 'pickaxe'
+git log -G password
+# to additionally see the diffs, use the flag -p (for patch), e.g.
+git log -pG password
+```
+
+## git diff
+
+```bash
+# diff a file (e.g. gradle.properties) between current workspace and branch
+git diff other-branch -- build.gradle
+# diff a file (e.g. gradle.properties) between branch-1 and branch-2
+git diff branch-1 branch-2 -- build.gradle
+```
+
 ## Useful features
 
 ### Fix a commit that is only local
@@ -119,4 +142,13 @@ git commit --amend --reset-author --no-edit
     git checkout rev_id_i_want_to_see
     # undo the detached state and get back to the pointer of your current branch
     git switch -
+    ```
+
+- Rename a branch via
+
+    ```bash
+    # rename current branch to new_name
+    git branch -m new_name
+    # rename branch named old_name to new_name
+    git branch -m old_name new_name
     ```

@@ -282,6 +282,21 @@ select random() * generate_series
 from pg_catalog.generate_series(1, 10000)
 ```
 
+### Overview of types and creating fake data
+
+```sql
+-- random number between 0 and 1
+random()
+-- random number between 1 and 11
+random() * 10 + 1
+-- random integer between 1 and 11
+floor(random() * 10 + 1)::int
+-- create random string
+md5(random()::text);
+-- create random string of length of maximum 10
+left(md5(random()::text);, 10)
+```
+
 ## Setting up database
 
 Log in on the machine as admin, e.g.
@@ -353,7 +368,7 @@ For Performance and Checkups, see
 
 References include
 
-- [depesz](https://www.depesz.com/2022/07/05/understanding-pg_stat_activity/
+- [depesz](<https://www.depesz.com/2022/07/05/understanding-pg_stat_activity/>
 
 ## Bulk loading
 
@@ -430,7 +445,7 @@ It does not quicken the loading, but running an `analyze` on a table after inser
 
 ### Set huge_pages=on on Linux
 
-See EnterpriseDB - Tuning](https://www.enterprisedb.com/postgres-tutorials/introduction-postgresql-performance-tuning-and-optimization)
+See EnterpriseDB - Tuning](<https://www.enterprisedb.com/postgres-tutorials/introduction-postgresql-performance-tuning-and-optimization>)
 
 ### Synchronous commit
 
