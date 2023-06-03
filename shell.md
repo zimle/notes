@@ -65,3 +65,5 @@ sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
     ```bash
     fd -pI 'classes' . | rg -o '.*\\classes' | sort | uniq
     ```
+
+- Baeldung [link](https://www.baeldung.com/linux/job-control-disown-nohup) about running jobs in the background

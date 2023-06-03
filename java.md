@@ -62,3 +62,5 @@ iconv -f iso-8859-1 -t utf-8 my_jstack.folded > my_jstack_utf8.folded
     -vm
     C:\Tools\jdk-17.0.2\bin\javaw.exe
     ```
+
+- main args like `gradle bootRun --args="--spring.profiles.active=manager,dev"` (see args) are handled as one argument `--spring.profiles.active=manager,dev` and not splitted artifically

@@ -22,6 +22,29 @@ gradlew help --task <task>
 ./gradlew -stop
 ```
 
+## Tests
+
+If running tests under different environment setups, but with the same test sources, use the flag `--rerun-tasks` to circumvent the caching.
+
+```bash
+# run all tests except integration tests
+gradle test
+# do not forget to set the JDK if your Java Home is different ;-)
+gradle test -Dorg.gradle.java.home="C:\\Tools\\jdk-17.0.2"
+# run specific test class
+gradle test --tests MyTestClass
+# run specific test method
+gradle test --tests MyTestClass.myTestMethod
+# run all tests including integration tests
+gradle integrationTest
+# really run all tests including integration tests, even if source did not change
+# (useful, as integration tests rely on ports, containers, etc. of host system which might change)
+gradle integrationTest --rerun-tasks
+# runs all tests and some additional checks like checkstyle
+gradle check
+
+```
+
 ## Linting
 
 [Nebula](https://github.com/nebula-plugins/gradle-lint-plugin) is recommended by [gradle](https://docs.gradle.org/current/userguide/performance.html).
@@ -49,3 +72,5 @@ According to the [gradle docs](https://docs.gradle.org/current/userguide/build_e
 ## Trivia
 
 - to specify the java version (e.g. when `JAVA_HOME` is older than Java version in project), one can specify it via the flag `-Dorg.gradle.java.home=myJavaPath`, e.g. `./gradlew build -Dorg.gradle.java.home=myJavaPath`.
+
+- use the flag `--refresh-depencies` to circumvent using cached packages

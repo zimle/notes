@@ -86,6 +86,17 @@ git diff other-branch -- build.gradle
 git diff branch-1 branch-2 -- build.gradle
 ```
 
+## remote tracking
+
+```bash
+# find out which local branches track which remote branches
+git branch -vv
+# set current branch to track on upstream branch foo
+git branch -u upstream/foo
+# set local branch bar to track on upstream branch foo
+git branch -u upstream/foo bar
+```
+
 ## Useful features
 
 ### Fix a commit that is only local
@@ -115,6 +126,22 @@ git rebase -i HEAD~3
 # for each commit you want to change the message for, replace 'pick' with 'reword'
 # change the messages
 # congrats, you are done
+```
+
+### Rebase general
+
+```bash
+# rebase last two commits of current branch onto branch target_branch
+git rebase -i HEAD~2 --onto target_branch
+```
+
+### Pushing
+
+```bash
+# push current HEAD to the branch upstream_branch on the upstream server origin
+# This formulation might be necessary when the local branch has an other name than
+# the upstream 
+git push origin HEAD:upstream_branch
 ```
 
 ### Fix the author / email address
@@ -152,3 +179,5 @@ git commit --amend --reset-author --no-edit
     # rename branch named old_name to new_name
     git branch -m old_name new_name
     ```
+
+- Pull an upstream branch `my-branch` with changed history: Do not pull, as it automatically merges. Just use `git reset origin/main --hard`, which overrides your local history
