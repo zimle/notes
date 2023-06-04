@@ -13,6 +13,19 @@ docker cp CONTAINER:/var/logs/ /tmp/app_logs
 docker cp CONTAINER:/var/logs/app.log - | tar x -O | grep "ERROR"
 ```
 
+## Run host file with executable from docker
+
+To sync host and the docker container executable, one has to use the to bind [mount the host file via `-v` and set the working directory via `-w`](https://docs.docker.com/engine/reference/commandline/run/#volume)
+
+```bash
+# run executable mark in docker container with flag --title-from-h1
+# on host file file_in_current_host_directory.md
+# does not run on git bash windows...
+docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:latest mark \
+    --title-from-h1 \
+    -f file_in_current_host_directory.md
+```
+
 ## Backup
 
 ### Container

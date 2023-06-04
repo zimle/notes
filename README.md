@@ -1,4 +1,4 @@
-# Notes
+# About
 
 This is a simple repo to store personal notes about stuff I have touched and might need to remember. I like to save these notes as markdown files due to
 

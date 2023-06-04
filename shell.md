@@ -1,5 +1,87 @@
 # Shell / Bash / Zsh / Cli
 
+## Functions
+
+Functions in bash have no argument variables as in standard programming languages. Instead, one has to refer via the standard argument references:
+
+- `$0` - Name of the script
+- `$1` to `$9` - Arguments to the script. $1 is the first argument and so on.
+- `$@` - All the arguments
+- `${@:2}` - All the arguments except the first
+- `$#` - Number of arguments
+- `$?` - Return code of the previous command
+- `$$` - Process identification number (PID) for the current script
+- `!!` - Entire last command, including arguments. A common pattern is to execute a command only for it to fail due to missing permissions; you can quickly re-execute the command with sudo by doing sudo !!
+- `$_` - Last argument from the last command. If you are in an interactive shell, you can also quickly get this value by typing Esc followed by . or Alt+.
+
+Here is an example:
+
+```bash
+function join_by {
+  local d=${1-} f=${2-}
+  if shift 2; then
+    printf %s "$f" "${@/#/$d}"
+  fi
+}
+x=$(join_by '\n' "${@:2}")
+echo "$x"
+```
+
+It also shows that functions do not have a return type. As more or less everything is a string, one has to catch the stdout of the function in a variable via `x=$(my_function)`.
+
+## Escaping characters
+
+The little [script](https://stackoverflow.com/questions/15783701/which-characters-need-to-be-escaped-when-using-bash) reveals all characters:
+
+```bash
+#!/bin/bash
+special=$'`!@#$%^&*()-_+={}|[]\\;\':",.<>?/ '
+for ((i=0; i < ${#special}; i++)); do
+    char="${special:i:1}"
+    printf -v q_char '%q' "$char"
+    if [[ "$char" != "$q_char" ]]; then
+        printf 'Yes - character %s needs to be escaped\n' "$char"
+    else
+        printf 'No - character %s does not need to be escaped\n' "$char"
+    fi
+done | sort
+```
+
+```bash
+No, character % does not need to be escaped
+No, character + does not need to be escaped
+No, character - does not need to be escaped
+No, character . does not need to be escaped
+No, character / does not need to be escaped
+No, character : does not need to be escaped
+No, character = does not need to be escaped
+No, character @ does not need to be escaped
+No, character _ does not need to be escaped
+Yes, character   needs to be escaped
+Yes, character ! needs to be escaped
+Yes, character " needs to be escaped
+Yes, character # needs to be escaped
+Yes, character $ needs to be escaped
+Yes, character & needs to be escaped
+Yes, character ' needs to be escaped
+Yes, character ( needs to be escaped
+Yes, character ) needs to be escaped
+Yes, character * needs to be escaped
+Yes, character , needs to be escaped
+Yes, character ; needs to be escaped
+Yes, character < needs to be escaped
+Yes, character > needs to be escaped
+Yes, character ? needs to be escaped
+Yes, character [ needs to be escaped
+Yes, character \ needs to be escaped
+Yes, character ] needs to be escaped
+Yes, character ^ needs to be escaped
+Yes, character ` needs to be escaped
+Yes, character { needs to be escaped
+Yes, character | needs to be escaped
+Yes, character } needs to be escaped
+```
+
 ## shell is slow
 
 Helpful links are
