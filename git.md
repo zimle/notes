@@ -61,7 +61,18 @@ On the other hand, to enforce the quality checks for all team members, the pre-c
 
 ```bash
 git config core.hooksPath git-hooks
+# on linux, the file must be executable, so dont forget
+chmod +x git-hooks/pre-commit
 ```
+
+Hint: When committing, one can [disable](https://git-scm.com/docs/git-commit) running the git commit hook via
+
+```bash
+# use --no-verify to prevent running the git commit hook
+git commit --no-verify
+```
+
+Note that the hook will also not be applied if the file is not executable (like forgetting setting `chmod +x git-hooks/precommit` or alike).
 
 ## git log
 
@@ -140,7 +151,7 @@ git rebase -i HEAD~2 --onto target_branch
 ```bash
 # push current HEAD to the branch upstream_branch on the upstream server origin
 # This formulation might be necessary when the local branch has an other name than
-# the upstream 
+# the upstream
 git push origin HEAD:upstream_branch
 ```
 

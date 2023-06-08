@@ -624,5 +624,9 @@ services:
 ## Trivia
 
 - the [crunchydata playground](https://www.crunchydata.com/developers/tutorials) allows for many interactive tutorials, including postgres in the browser.
+
 - [supabase](https://supabase.com/blog/postgres-wasm) has a public repo that allows you to run postgres in the browser via `npx`
+
 - When doing prepared statements, postgres does not execute the generic plan but does some [sampling](https://www.cybertec-postgresql.com/en/tech-preview-how-postgresql-12-handles-prepared-plans/): For the first 5 times, it replans the query anew (custom plan) depending on the parameters. Afterwards, it again creates a custom plan and compares its estimated planner cost against the generic plan: If postgres thinks that they perform similar, it switches to the generic plan. If not, the comparison starts for the 7th plan etc. Starting from postgres 12, the parameter `plan_cache_mode = 'force_generic_plan'` forces postgres to directly use the generic plan.
+
+- A guide recommended by [scaling postgres](https://www.scalingpostgres.com/episodes/268-faster-copy-psql-variables-backup_label-bad-encoding/) about variables from [depesz](https://www.depesz.com/2023/05/28/variables-in-psql-how-to-use-them/)
