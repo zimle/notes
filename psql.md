@@ -9,6 +9,8 @@ The most important `psql` command is
 
 This enables for searching the right command. See also the [manual](https://www.postgresql.org/docs/current/app-psql.html).
 
+A nice site with many small tips is by [Laetitia Avrot](https://psql-tips.org/).
+
 ## Pager
 
 `psql` per default uses the pager defined in the environment variables, which usually is less on Linux. When querying many columns which dont fit the screen, the output gets messy for the first columns. Scrolling to the right by pressing the right arrow gives a good result. However, the view gets messy when jumping back via left arrow key.

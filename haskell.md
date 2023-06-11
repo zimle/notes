@@ -291,10 +291,10 @@ Nothing
 
 # exported in Control.Applicative: Shorthand for for first lifting function
 # then applying applicative functor
-(<$>) :: (Functor f) => (a -> b) -> f a -> f b  
+(<$>) :: (Functor f) => (a -> b) -> f a -> f b
 f <$> x = fmap f x
 # example for <$>
-1.  ghci> (++) <$> Just "johntra" <*> Just "volta"  
+1.  ghci> (++) <$> Just "johntra" <*> Just "volta"
 2.  Just "johntravolta"
 ```
 
@@ -360,10 +360,10 @@ newtype State s a = State { runState :: s -> (a,s) }
 It is useful for stateful objects like stacks, random generators that are not allowed to be manipulated by Haskell due to its pureness. When calling a function that also manipulates the state (like pop), one has to return the result *and* the current state (a new object). This quickly becomes tedious, so one wraps it into State Monads:
 
 ```haskell
-instance Monad (State s) where  
-    return x = State $ \s -> (x,s)  
-    (State h) >>= f = State $ \s -> let (a, newState) = h s  
-                                        (State g) = f a  
+instance Monad (State s) where
+    return x = State $ \s -> (x,s)
+    (State h) >>= f = State $ \s -> let (a, newState) = h s
+                                        (State g) = f a
                                     in  g newState
 ```
 
@@ -477,3 +477,47 @@ Also see [Avoiding space leaks at all costs](https://kodimensional.dev/space-lea
 - [quickcheck](https://hackage.haskell.org/package/QuickCheck) (the mother of pbt, generates random tests)
 - [smallcheck](https://github.com/Bodigrim/smallcheck) (tries to capture all finitely many cases up to a certain depth)
 - [quickstrom](https://github.com/quickstrom/quickstrom) test the dom of the browser
+
+## Toolchain
+
+The modern approach to use Haskell is the following tool chain
+
+- [GHCup](https://www.haskell.org/ghcup/) manages the different tools (install / uninstall / default version to use):
+
+  - [GHC](https://www.haskell.org/ghc/), the Glasgow Haskell Compiler: It is THE implementation of Haskell
+
+  - [HLS](https://github.com/haskell/haskell-language-server), the Haskell Language Server
+
+  - [Stack](https://docs.haskellstack.org/en/stable/): Tool to build and test your project, install packages, install GHC in an isolated environment for the project
+
+  - [cabal](https://hackage.haskell.org/package/Cabal): A framework for packaging Haskell software
+
+Note that `cabal` optionally provides a cli installer [cabal-install](https://hackage.haskell.org/package/cabal-install) that existed before `Stack`. While it was considered as user-unfriendly, `Stack` emerged. Nowadays, they seem to be on par. `Stack` seems to work snapshot based, while `cabal-install` allows for more freedom, but is more complicated.
+
+Apart from the bare bone tooling, here is a list of sensible tools for developing:
+
+- [hlint](https://github.com/ndmitchell/hlint) for linting
+
+- [ormolu](https://github.com/tweag/ormolu/) for formatting (there are other less opinionated formatters)
+
+- [ghcid](https://github.com/ndmitchell/ghcid) for starting the interactive interpreter [ghci](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghci.html) with automatical reload when code has changed
+
+### Stack
+
+To start a new project, the [following commands](https://www.fpcomplete.com/haskell/tutorial/stack-build/) might help:
+
+```bash
+# create a new project with default template
+stack new my-project-name
+```
+
+## Trivia
+
+- Updates: If using [ghcup](https://www.haskell.org/ghcup/), run
+
+    ```bash
+    # show newest available versions of ghc, stack and hls and commands to install them, upgrade ghcup
+    ghcup upgrade
+    # get a nice tui for overview of supported version and installing / deleting them
+    ghcup tui
+    ```
