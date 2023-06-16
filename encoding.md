@@ -13,4 +13,4 @@ grep --color='auto' -n "^[[:ascii:]]" my_file.md
 cat my_file.md | tr -cd '[:print:]\r\n'
 ```
 
-Consider using this as a [pre-commit hook](git-hooks/pre-commit), especially when just copying and pasting from websites and therby introducing non-asciis by accident.
+Consider using this as a [pre-commit hook](git-hooks/pre-commit), especially when just copying and pasting from websites and thereby introducing non-asciis by accident.

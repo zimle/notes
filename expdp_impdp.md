@@ -62,7 +62,7 @@ impdp username/pwd directory=name dumpfile=name sqlfile=name.sql
 
 ## Full database export
 
-Beispiel aus der [Oracle Doku](https://docs.oracle.com/database/121/SUTIL/GUID-1E134053-692A-4386-BB77-153CB4A6071A.htm#SUTIL887)
+Example from [Oracle docs](https://docs.oracle.com/database/121/SUTIL/GUID-1E134053-692A-4386-BB77-153CB4A6071A.htm#SUTIL887)
 
 ```bash
 expdp hr FULL=YES DUMPFILE=dpump_dir1:full1%U.dmp, dpump_dir2:full2%U.dmp FILESIZE=2G PARALLEL=3 LOGFILE=dpump_dir1:expfull.log JOB_NAME=expfull

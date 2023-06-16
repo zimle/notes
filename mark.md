@@ -1,6 +1,6 @@
 # Mark
 
-[Mark](https://github.com/kovetskiy/mark) is a cli tool to create hmtl out of markdown files and publish them to Confluence. Mark supports certain "html tags" for meta data like
+[Mark](https://github.com/kovetskiy/mark) is a cli tool to create html out of markdown files and publish them to Confluence. Mark supports certain "html tags" for meta data like
 
 ```html
 <!-- Space: <space key> -->
@@ -47,7 +47,7 @@ Note that `mark` also provides the flag `--dry-run` to see the html output that 
 
 ## Personal
 
-I personally do not aim primary for synching my notes (projects may!) with confluence and regard this only as a service. Therfore, I
+I personally do not aim primary for synching my notes (projects may!) with confluence and regard this only as a service. Therefore, I
 
 - aim to reduce the necessary "html tags" by using cli flags as much as possible (e.g. `--title-from-h1` replaces `<!-- Title: <title> -->`)
 - transform the original data into separate folder with necessary "html tags"
@@ -57,7 +57,7 @@ Here is my somewhat ugly script that does the job (must be started from some spe
 ```bash
 #! /usr/bin/env bash
 
-# copies all markdown files into a new folde, prepending
+# copies all markdown files into a new folder, prepending
 # html headers specific to https://github.com/kovetskiy/mark
 
 set -euo pipefail

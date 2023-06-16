@@ -9,7 +9,7 @@
 
 ## Code examples
 
-Some nice commands (note that the base url `my_confluenc_base_url` is just the url you enter in the browser)
+Some nice commands (note that the base url `my_confluence_base_url` is just the url you enter in the browser)
 
 ```bash
 curl -u $user:$pwd "https://my_confluenc_base_url/rest/api/content/75860204/?expand=body.storage,version,space"

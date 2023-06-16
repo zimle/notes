@@ -11,7 +11,7 @@ cat /dev/clipboard | pandoc -f jira -t markdown
 pandoc -s -r html https://docs.oracle.com/en/database/oracle/oracle-database/19/vldbg/view-info-partition-tables-indexes.html#GUID-2D424638-511C-4CC3-9BDE-53FFB1686ECD -t markdown
 ```
 
-## Comvert options
+## Convert options
 
 From all the [convert options](https://pandoc.org/chunkedhtml-demo/3.1-general-options.html), here are the [markdown variants](https://pandoc.org/MANUAL.html#markdown-variants):
 

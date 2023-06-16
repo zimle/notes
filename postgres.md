@@ -2,12 +2,12 @@
 
 ## Additional modules
 
-Here is a list of additional modules one ususally wants to have enabled, even on production:
+Here is a list of additional modules one usually wants to have enabled, even on production:
 
 - [pg_stat_statements](https://www.postgresql.org/docs/current/pgstatstatements.html) to monitor queries, only has *low* overhead
 - [auto_explain](https://www.postgresql.org/docs/current/auto-explain.html) to log long running queries and get the explain plan for them
 
-## Meta Informations
+## Meta information
 
 ### System Catalogues / Meta tables
 
@@ -289,7 +289,7 @@ It yields around 13 GB. Then run `VACUUM FULL VERBOSE`. Afterwards, we get a siz
 ## Creating Fake data / Test data
 
 ```sql
--- insert random numers generate_series
+-- insert random numbers generate_series
 insert into t (id)
 select random() * generate_series
 from pg_catalog.generate_series(1, 10000)
@@ -450,7 +450,7 @@ SELECT pg_size_pretty(pg_current_xlog_location() - '0/00000000'::pg_lsn);
 SELECT * FROM pg_ls_waldir()
 ```
 
-- Avoid write amplification: Even a table with a primary key can lead to siginificant write overhead if the key is uuid vs bigint, see [On the impact of full-page writes](https://www.2ndquadrant.com/en/blog/on-the-impact-of-full-page-writes/ "Permanent Link: On the impact of full-page writes") As uuids are random, postgres likely has to touch a new leaf index leaf page every write as opposed to the bigint, where it is likely that we stay in the same leaf index leaf page. Thus, much more must be written to the wal (every time postgres dirties a page, the whole must be written to wal). A middle way would be to use sortable UUIDs, also see [Haki Benita citus conf 2023 talk](https://www.citusdata.com/cituscon/2023/schedule/#ondemand). An advice for efficient search on uuids is to use a [brin index with a bloom filter](https://www.postgresql.org/docs/current/brin-builtin-opclasses.html). They also work on other data types.
+- Avoid write amplification: Even a table with a primary key can lead to significant write overhead if the key is uuid vs bigint, see [On the impact of full-page writes](https://www.2ndquadrant.com/en/blog/on-the-impact-of-full-page-writes/ "Permanent Link: On the impact of full-page writes") As uuids are random, postgres likely has to touch a new leaf index leaf page every write as opposed to the bigint, where it is likely that we stay in the same leaf index leaf page. Thus, much more must be written to the wal (every time postgres dirties a page, the whole must be written to wal). A middle way would be to use sortable UUIDs, also see [Haki Benita citus conf 2023 talk](https://www.citusdata.com/cituscon/2023/schedule/#ondemand). An advice for efficient search on uuids is to use a [brin index with a bloom filter](https://www.postgresql.org/docs/current/brin-builtin-opclasses.html). They also work on other data types.
 
 ### Run analyze afterwards
 

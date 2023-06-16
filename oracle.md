@@ -146,7 +146,7 @@ from dual
 connect by level <= 100000;
 ```
 
-To avoid [memory issues](https://oracle-base.com/articles/misc/dbms_random), use a cartesion product and limit the number of rows of the cartesian product
+To avoid [memory issues](https://oracle-base.com/articles/misc/dbms_random), use a cartesian product and limit the number of rows of the cartesian product
 
 ```sql
 -- returns 10*10*10 rows with id from 1 to 10000

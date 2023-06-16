@@ -50,7 +50,7 @@ Abort with `CTRL+C` when the interesting part of your application has finished a
 iconv -f iso-8859-1 -t utf-8 my_jstack.folded > my_jstack_utf8.folded
 # convert to flamegraph
 ./flamegraph.pl --color=java my_jstack.folded > my_jstack.svg
-# alltogether example
+# altogether example
 ~/projects/FlameGraph/stackcollapse-jstack.pl stack.txt | iconv -f iso-8859-1 -t utf-8 > stack.folded && ~/projects/FlameGraph/flamegraph.pl --color=java stack.folded > stack.svg
 ```
 
@@ -63,4 +63,4 @@ iconv -f iso-8859-1 -t utf-8 my_jstack.folded > my_jstack_utf8.folded
     C:\Tools\jdk-17.0.2\bin\javaw.exe
     ```
 
-- main args like `gradle bootRun --args="--spring.profiles.active=manager,dev"` (see args) are handled as one argument `--spring.profiles.active=manager,dev` and not splitted artifically
+- main args like `gradle bootRun --args="--spring.profiles.active=manager,dev"` (see args) are handled as one argument `--spring.profiles.active=manager,dev` and not splitted artificially

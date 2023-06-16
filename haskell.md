@@ -7,7 +7,7 @@
 From the [wiki](https://wiki.haskell.org/Type): In Haskell, `types` are how you describe the data your program will work with.
 
 ```haskell
--- generell naming
+-- general naming
 data TypeName = ValueConstructors
 -- examples
 data Maybe a = Just a | Nothing
@@ -62,7 +62,7 @@ b = Cons 5 Empty
 -- we could also use another String starting with capital letter like ... "What" as in lists
 data List a = Empty | What { listHead :: a, listTail :: List a} deriving (Show, Read, Eq, Ord)
 a = 5 `What` Empty
--- To use sepcial symbols like ":?:", we have to
+-- To use special symbols like ":?:", we have to
 infixr 5 :?:
 data List a = Empty | a :?: (List a) deriving (Show, Read, Eq, Ord)
 a = 5 :?: Empty
@@ -249,7 +249,7 @@ Either Int :: * -> *
 
 ### Monoid
 
-Just a type class where the properties of a `monoid` in the mathmatical sense are listed
+Just a type class where the properties of a `monoid` in the mathematical sense are listed
 
 ```haskell
 -- takes concrete type as opposed to type class in functor
@@ -330,7 +330,7 @@ instance Monad [] where
     fail _ = []
 ```
 
-Note that the `do notation` faciliates the use of `monads` when using nested bind operations:
+Note that the `do notation` facilitates the use of `monads` when using nested bind operations:
 
 ```haskell
 type Pole = (Int, Int)

@@ -55,7 +55,7 @@ See also the [official page](https://docs.docker.com/storage/volumes/#back-up-re
 
 ## Move docker-desktop-data to another device on Windows with WSL2
 
-This receipe is taken from [kimcuonthenet](https://dev.to/kimcuonthenet/move-docker-desktop-data-distro-out-of-system-drive-4cg2) resp. [Stackoverflow](https://stackoverflow.com/questions/40465979/change-docker-native-images-location-on-windows-10-pro)
+This recipe is taken from [kimcuonthenet](https://dev.to/kimcuonthenet/move-docker-desktop-data-distro-out-of-system-drive-4cg2) resp. [Stackoverflow](https://stackoverflow.com/questions/40465979/change-docker-native-images-location-on-windows-10-pro)
 
 1. Quit Docker/Docker-Desktop
 2. Open `powershell` or `cmd` and execute `wsl --shutdown`
@@ -65,7 +65,7 @@ This receipe is taken from [kimcuonthenet](https://dev.to/kimcuonthenet/move-doc
 
 ## Run two docker-compose files in one command
 
-Docker has some [composibility rules](https://docs.docker.com/compose/extends/). The simplest is to specify each yml with the `-f` flag:
+Docker has some [combinable rules](https://docs.docker.com/compose/extends/). The simplest is to specify each yml with the `-f` flag:
 
 ```bash
 docker compose -f postgres-compose.yml -f oracle-compose.yml up -d

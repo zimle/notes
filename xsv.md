@@ -12,7 +12,7 @@ xsv search -d ';' -s "account_id" "7202136853|7202288602|7201055060|7202136047|7
 
 ```shell
 # value count of columns:
-# first restrict to col_of_interest (not necessary, but prevent unintersting
+# first restrict to col_of_interest (not necessary, but prevent uninteresting
 # other columns,
 # then count every value with its frequency
 xsv select -d ";" "col_of_interest" large.csv | xsv frequency

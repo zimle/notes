@@ -43,7 +43,7 @@ git maintenance run --task=commit-graph --task=gc --task=incremental-repack --ta
     git config --local --unset core.hookspath
     ```
 
-- Typically, the global `.gitconfig` resides in the home folder. If one wants to make project specific configuartions (like email address in the commit), one can still use the `--local` flag like this
+- Typically, the global `.gitconfig` resides in the home folder. If one wants to make project specific configurations (like email address in the commit), one can still use the `--local` flag like this
 
     ```bash
     git config --local user.email my.special@address.com
@@ -74,7 +74,7 @@ Hint: When committing, one can [disable](https://git-scm.com/docs/git-commit) ru
 git commit --no-verify
 ```
 
-Note that the hook will also not be applied if the file is not executable (like forgetting setting `chmod +x git-hooks/precommit` or alike).
+Note that the hook will also not be applied if the file is not executable (like forgetting setting `chmod +x git-hooks/pre-commit` or alike).
 
 Some of the standard frameworks for git hooks are
 
@@ -321,7 +321,7 @@ git branch -u upstream/foo bar
 
 When migrating to a formatter tool, the most simplest version is to just let it run over the whole code base.
 Sadly, this annihilates a lot of useful information from git blame.
-To cirumvent this issue, one can create a list of commit hashes, typically called `.git-blame-ignore-revs`. One now has two options to ignore these commits in git blame:
+To circumvent this issue, one can create a list of commit hashes, typically called `.git-blame-ignore-revs`. One now has two options to ignore these commits in git blame:
 
 1. Run `git config --local blame.ignoreRevsFile .git-blame-ignore-revs` such git automatically recognizes these commits.
     Even the IDE should recognize this.

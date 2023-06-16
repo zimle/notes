@@ -82,6 +82,6 @@ Recap the meaning:
 - base: the version that is common to both local and remote
 - merged: the version you finally get when resolving the conflicts / you are quitting vimdiff
 
-Additonal key bindings:
+Additional key bindings:
 
 - use `CTRL+w` generally to switch between windows

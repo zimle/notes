@@ -12,7 +12,7 @@ An object in Java Script is can be expressed in three different ways:
 
 - `new Object()`
 - `Object.create()`
-- an [object initializer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer?retiredLocale=de), e.g. `const obejct1 = { a: 'foo', b: 42, c: {} }`
+- an [object initializer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Object_initializer?retiredLocale=de), e.g. `const object1 = { a: 'foo', b: 42, c: {} }`
 
 ```javascript
 const object1 = { a: 'foo', b: 42, c: {} };
