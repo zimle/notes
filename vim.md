@@ -10,6 +10,41 @@
 1. escape and navigate to the place where to paste the lines
 1. press `p` to paste all lines after the cursor or `P` to paste all lines before the cursor
 
+### Duplicating a line
+
+From [SO](https://stackoverflow.com/questions/73319/how-to-duplicate-a-whole-line-in-vim):
+
+>Normal mode: see other answers.
+>
+>The Ex way:
+>
+> `:t.` will duplicate the line,
+> `:t 7` will copy it after line 7,
+> `:,+t0` will copy current and next line at the beginning of the file (,+ is a synonym for the range .,.+1),
+> `:1,t$` will copy lines from beginning till cursor position to the end (1, is a synonym for the range 1,.).
+>
+>If you need to move instead of copying, use :m instead of :t.
+>
+>This can be really powerful if you combine it with :g or :v:
+>
+> `:v/foo/m$` will move all lines not matching the pattern "foo" to the end of the file.
+> `:+,$g/^\s*class\s\+\i\+/t.` will copy all subsequent lines of the form class xxx right after the cursor.
+>
+>Reference: :help range, :help :t, :help :g, :help :m and :help :v
+
+### Search and replace
+
+Also see [Fandom](https://vim.fandom.com/wiki/Search_and_replace):
+
+```bash
+# Find each occurrence of 'foo' (in the current line only), and replace it with 'bar'.
+:s/foo/bar/g
+# Find each occurrence of 'foo' (in all lines), and replace it with 'bar'.
+:%s/foo/bar/g
+# Change only whole words exactly matching 'foo' to 'bar'; ask for confirmation.
+:%s/foo/bar/g
+```
+
 ## Using vimdiff
 
 Vim can als be used to show and edit the diffs between two files via running `vim -d file1.txt file2.txt`. `vimdiff` is just a synonym for `vim -d`. It is also useful to solve merge conflicts. Here are some basics copied from [SO](https://stackoverflow.com/questions/14904644/how-do-i-use-vimdiff-to-resolve-a-git-merge-conflict):
@@ -32,11 +67,13 @@ Vim can als be used to show and edit the diffs between two files via running `vi
 
 Note that the merge conflict schema is always the following:
 
+```quote
     +--------------------------------+
     | LOCAL  |     BASE     | REMOTE |
     +--------------------------------+
     |             MERGED             |
     +--------------------------------+
+```
 
 Recap the meaning:
 

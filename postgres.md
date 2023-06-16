@@ -148,6 +148,19 @@ from bytes_per_row
 order by tablename;
 ```
 
+### Table information
+
+Use the columns table from information_schema:
+
+```sql
+SELECT 
+*
+FROM 
+   information_schema.columns
+WHERE 
+   table_name = 'my_table_name';
+```
+
 ## Toasts
 
 Toast stands for [The Oversized-Attribute Storage Technique](https://www.postgresql.org/docs/current/storage-toast.html). As a row must fit into a page of 8kB, bigger rows (or rows with big values) use the toast technique (similar as #oracle allows only 8kB blocks and uses row chaining if records get too big). Toasting is defined on the data type and not on the row/tuple

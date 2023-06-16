@@ -43,6 +43,8 @@ docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:l
     -f my_folder/*.md
 ```
 
+Note that `mark` also provides the flag `--dry-run` to see the html output that would be generated, without actually creating the content.
+
 ## Personal
 
 I personally do not aim primary for synching my notes (projects may!) with confluence and regard this only as a service. Therfore, I

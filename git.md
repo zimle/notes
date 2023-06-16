@@ -55,7 +55,9 @@ git maintenance run --task=commit-graph --task=gc --task=incremental-repack --ta
 
 ## Hooks
 
-Hooks are a wonderful way to shift quality "to the left". There are various hooks availbale, and on can see examples for them in the folder `.git/hooks`. Removing the suffix `.sample` lets git execute these hooks. E.g., by default, git looks for the file `.git/hooks/pre-commit` [before](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) one is forwarded to typing the commit message.
+Hooks are a wonderful way to shift quality "to the left". There are [various hooks available](https://git-scm.com/docs/githooks), and on can see examples for them in the folder `.git/hooks`.
+Removing the suffix `.sample` lets git execute these hooks.
+E.g., by default, git looks for the file `.git/hooks/pre-commit` [before](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) one is forwarded to typing the commit message.
 
 On the other hand, to enforce the quality checks for all team members, the pre-commit should be version controlled. To achieve this, one can create a `git-hooks` folder in the repository with all relevant hooks. To ensure that they are applied, run
 
@@ -73,6 +75,213 @@ git commit --no-verify
 ```
 
 Note that the hook will also not be applied if the file is not executable (like forgetting setting `chmod +x git-hooks/precommit` or alike).
+
+Some of the standard frameworks for git hooks are
+
+- [pre-commit](https://pre-commit.com/) (Python)
+- [husky](https://typicode.github.io/husky/) (Javascript)
+
+Those frameworks are also capable to provide checks and formatting that can be applied on other languages like Java.
+On the other hand, one likes to stick with her / his toolchain (like using `gradle` (Java), `cargo` (Rust), `stack` (Haskell)).
+Sometimes, one has to write the pre-commit hook himself.
+Here is an example for Java:
+
+```bash
+#!/bin/sh
+
+# apply gradle check for:
+# - code formatting (spotless) on the files to be committed
+# - code style (checkstyle)
+# - code analysis (pmd)
+
+undo_stashing() {
+    echo "Pre-commit: Undo stashing"
+    git stash pop --quiet
+}
+
+check() {
+    ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --parallel
+}
+echo "Pre-commit hook: Stash working-tree and untracked files."
+git stash save --quiet --include-untracked --keep-index
+
+echo "Pre-commit hook: Format code changes"
+if ! ./gradlew spotlessApply --parallel; then
+    echo "Could not apply formatting. Please check the console output."
+    undo_stashing
+    exit 1
+fi
+
+# add changes by formatter to staging area
+git add --all
+
+echo "Pre-commit hook: Apply gradle checks"
+if check; then
+    echo "All checks passed."
+    undo_stashing
+    exit 0
+else
+    echo "A check failed. Please check the console output"
+    undo_stashing
+    exit 1
+fi
+```
+
+The gist of such scripts is:
+
+1. Clean all git areas except the ones to be committed (i.e. staging area aka index)
+1. Apply formatter (if one wants to) and add changes to the staging area
+1. Apply checks on the formatted code
+1. Undo the stashing and return the untracked files as well as working tree changes
+
+Only changes in the staging area and the formatter changes on that file (*whole* file in staging area will be formatted) will be committed.
+Note, however, that after committing, your working tree might not have the changes from the formatter due to the stashing and only the formatted version is committed.
+Thus, manual cleanup might still be needed.
+
+To enforce those checks and not impose manual work for the developer, one can configure his toolchain to set up everything, e.g. with gradle:
+
+```groovy
+// build.gradle example
+task setGitProjectConfig {
+    // set git hook path to git-hooks, where git should look for its hooks like pre-commit
+    exec {
+        commandLine "git", "config", "--local", "core.hooksPath", "git-hooks"
+    }
+}
+
+// every time java compiles (which a developer must do at some point), the git config is updated
+compileJava.dependsOn processResources, setGitProjectConfig
+```
+
+## Stashing
+
+Stashing is an easy method to temporarily remove changes from the working tree and/or the index (aka. staging area) and/or the untracked files.
+Some easy use cases:
+
+```bash
+# temporarily remove changes from working tree and index
+git stash
+# see all temporarily removed changes
+git stash list
+# apply first stashed change back again and remove it from list
+git stash pop
+# apply 5-th stashed change from the list (git stash list) back again and remove it from list
+git stash pop stash@{5}
+# apply stash without removing it from the stash list
+git stash apply stash@{5}
+# stash with a meaningful name
+git stash save name-i-can-remember
+# apply stash with meaningful name
+git stash apply name-i-can-remember
+```
+
+To play with different areas where stash will move the changes to "temp", consider the following scenario
+
+```bash
+git status
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   staged.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   unstaged.java
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        untracked.java
+```
+
+Behaviour with `git stash`:
+
+```bash
+# Stash diffs in staging area and working tree, new files will be untouched
+git stash
+git status
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        untracked.java
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+# Note that the diffs from the staging area are now moved to working tree!
+# Use git stash pop --index to bring back the changes from the index to the index
+git stash pop
+git status
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   staged.java
+        modified:   unstaged.java
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        untracked.java
+
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+
+Behaviour with `git stash --keep-index`:
+
+```bash
+# Stash diffs only in working tree, new files and staged files will be untouched
+git stash --keep-index
+git status
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   staged.java
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        untracked.java
+
+# Applying git stash pop will turn back to original setup
+git stash pop
+git status
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   staged.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   unstaged.java
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        untracked.java
+```
+
+Behaviour with `git stash --include-untracked`:
+
+```bash
+# Stash in all areas
+git stash --include-untracked
+git status
+nothing to commit, working tree clean
+
+# Applying git stash pop will turn back to original setup
+git stash pop
+git status
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   staged.java
+        modified:   unstaged.java
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        untracked.java
+```
+
+Note that these commands can be combined:
+
+```bash
+# remove everything except in staging area
+# useful for pre-commit hooks
+git stash --keep-index -include-untracked
+```
 
 ## git log
 
@@ -107,6 +316,17 @@ git branch -u upstream/foo
 # set local branch bar to track on upstream branch foo
 git branch -u upstream/foo bar
 ```
+
+## Mass changes like formatting
+
+When migrating to a formatter tool, the most simplest version is to just let it run over the whole code base.
+Sadly, this annihilates a lot of useful information from git blame.
+To cirumvent this issue, one can create a list of commit hashes, typically called `.git-blame-ignore-revs`. One now has two options to ignore these commits in git blame:
+
+1. Run `git config --local blame.ignoreRevsFile .git-blame-ignore-revs` such git automatically recognizes these commits.
+    Even the IDE should recognize this.
+
+2. Manually always use the flag `--ignore-revs-file` as in `git blame --ignore-revs-file .git-blame-ignore-revs`.
 
 ## Useful features
 
@@ -173,10 +393,10 @@ git commit --amend --reset-author --no-edit
 
 ## Trivia
 
-- Sometimes, files were deleted and created anew instead of using `git mv`, loosing references. For such cases, it is sometime more convenient to check out a specifc commit and then undo this, e.g.:
+- Sometimes, files were deleted and created anew instead of using `git mv`, loosing references. For such cases, it is sometime more convenient to check out a specific commit and then undo this, e.g.:
 
     ```bash
-    # get in detached state and sneak a consistent snapshot at the time of a specifc commit
+    # get in detached state and sneak a consistent snapshot at the time of a specific commit
     git checkout rev_id_i_want_to_see
     # undo the detached state and get back to the pointer of your current branch
     git switch -
@@ -191,4 +411,20 @@ git commit --amend --reset-author --no-edit
     git branch -m old_name new_name
     ```
 
+- Rename a file via `git mv MYOldfile.java MyOldFile.java`. This might become important for Windows, as it does not distinct between upper and lower case.
+
 - Pull an upstream branch `my-branch` with changed history: Do not pull, as it automatically merges. Just use `git reset origin/main --hard`, which overrides your local history
+
+- Show all files changed in the last 10 commits:
+
+    ```bash
+    # Show all changed files in the last 10 commits
+    git diff --name-only --pretty="" HEAD~10 HEAD
+    # Show all changed files in the last 10 commits, but exclude deleted files
+    git diff --name-only --diff-filter=d --pretty="" HEAD~10 HEAD
+    # Show only added files in the last 10 commits
+    git diff --name-only --diff-filter=A --pretty="" HEAD~10 HEAD
+    # Show only changed files in the last 10 commits, do not use a pager like less
+    # useful for shell commands
+    git --no-pager diff --name-only --pretty="" HEAD~10 HEAD
+    ```

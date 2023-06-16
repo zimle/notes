@@ -82,6 +82,33 @@ Yes, character | needs to be escaped
 Yes, character } needs to be escaped
 ```
 
+## Exit and return
+
+From [SO](https://stackoverflow.com/questions/4419952/difference-between-return-and-exit-in-bash-functions):
+
+> return will cause the current function to go out of scope, while exit will cause the script to end at the point where it is called. Here is a sample program to help explain this:
+
+```bash
+#!/bin/bash
+
+retfunc() {
+    echo "this is retfunc()"
+    return 1
+}
+
+exitfunc() {
+    echo "this is exitfunc()"
+    exit 1
+}
+
+retfunc
+echo "We are still here"
+exitfunc
+echo "We will never see this"
+```
+
+Note that return will give back the return value of the last called function `$?` if no return value is provided.
+
 ## shell is slow
 
 Helpful links are

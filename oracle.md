@@ -655,3 +655,13 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     ```
 
 - [FAQ](https://www.oracle.com/database/technologies/faq-jdbc.html) about oracle jdbc drivers seems to be very complete
+
+- convert unix timestamp to date time:
+
+    ```sql
+    TO_CHAR(FROM_TZ(TO_TIMESTAMP('1970-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS.FF') + NUMTODSINTERVAL(ts /1000, 'SECOND'), 'UTC') 
+    AT TIME ZONE 'Europe/Berlin', 'YYYY-MM-DD HH24:MI:SS.FF') AS ts_as_date,
+    ts as timestamp 
+    from my_table
+    order by ts desc nulls last 
+    ```

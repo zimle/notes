@@ -13,6 +13,38 @@ Most basic issues can be achieved by using the help functions:
 gradlew help --task <task>
 ```
 
+Often, gradle tasks depend on each other and it is not visible from the help functions what exactly a task does. To see this, use the `--dry-run` flag:
+
+```bash
+# see what tasks are executed with a specific gradle task, e.g. check
+./gradlew check --dry-run
+:bootBuildInfo SKIPPED
+:processResources SKIPPED
+:compileJava SKIPPED
+:generateGitProperties SKIPPED
+:classes SKIPPED
+:checkstyleMain SKIPPED
+:checkstyleNohttp SKIPPED
+:compileTestJava SKIPPED
+:processTestResources SKIPPED
+:testClasses SKIPPED
+:checkstyleTest SKIPPED
+:test SKIPPED
+:integrationTest SKIPPED
+:modernizer SKIPPED
+:pmdMain SKIPPED
+:pmdTest SKIPPED
+:spotlessInternalRegisterDependencies SKIPPED
+:spotlessJava SKIPPED
+:spotlessJavaCheck SKIPPED
+:spotlessMisc SKIPPED
+:spotlessMiscCheck SKIPPED
+:spotlessYaml SKIPPED
+:spotlessYamlCheck SKIPPED
+:spotlessCheck SKIPPED
+:check SKIPPED
+```
+
 ## Start / stop application
 
 ```bash
@@ -42,7 +74,6 @@ gradle integrationTest
 gradle integrationTest --rerun-tasks
 # runs all tests and some additional checks like checkstyle
 gradle check
-
 ```
 
 ## Linting
@@ -73,4 +104,4 @@ According to the [gradle docs](https://docs.gradle.org/current/userguide/build_e
 
 - to specify the java version (e.g. when `JAVA_HOME` is older than Java version in project), one can specify it via the flag `-Dorg.gradle.java.home=myJavaPath`, e.g. `./gradlew build -Dorg.gradle.java.home=myJavaPath`.
 
-- use the flag `--refresh-depencies` to circumvent using cached packages
+- use the flag `--refresh-dependencies` to circumvent using cached packages
