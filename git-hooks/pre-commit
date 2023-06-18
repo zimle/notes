@@ -4,6 +4,9 @@
 # it assumes to have ripgrep (https://github.com/BurntSushi/ripgrep) in the path
 # but should also work with grep on unix (sadly, not git bash on windows)
 
+echo "Start pre-commit hook"
+echo "Check for non-ascii characters"
+
 if rg -q "[^[:ascii:]]"
 then
 echo "Found non-ascii character:"

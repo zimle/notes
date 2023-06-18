@@ -153,11 +153,11 @@ order by tablename;
 Use the columns table from information_schema:
 
 ```sql
-SELECT 
+SELECT
 *
-FROM 
+FROM
    information_schema.columns
-WHERE 
+WHERE
    table_name = 'my_table_name';
 ```
 
@@ -383,7 +383,7 @@ References include
 
 - [depesz](<https://www.depesz.com/2022/07/05/understanding-pg_stat_activity/>
 
-## Bulk loading
+## Bulk operations
 
 References include
 
@@ -406,6 +406,7 @@ References include
 - bgwriter_lru_maxpages
 - bgwriter_delay
 - bgwriter_lru_multiplier
+- work_mem: memory available to workers for queries, can be set globally (might lead to OOMs if configured too high!) or within a session for rare long running queries like analysis statements; otherwise, worker has to write to disk (e.g. sorting)
 
 ### Commands to insert / bulk load
 

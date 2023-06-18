@@ -509,7 +509,67 @@ To start a new project, the [following commands](https://www.fpcomplete.com/hask
 ```bash
 # create a new project with default template
 stack new my-project-name
+# use the template rubik https://github.com/commercialhaskell/stack-templates/blob/master/rubik.hsfiles
+# with certain settings provided; can also be set in ~/.stack/config.yaml
+stack new my-project-name rubik -p "author-email:value" -p "author-name:value" -p "category:value" -p "copyright:value" -p "github-username:value"
 ```
+
+#### Stack Configuration
+
+The stack [configuration precedence](https://docs.haskellstack.org/en/stable/yaml_configuration/) is the following:
+
+>Stack obtains project-level configuration from one of the following (in order of preference):
+>
+> - A file specified by the `--stack-yaml` command line option.
+> - A file specified by the `STACK_YAML` environment variable.
+> - A file named `stack.yaml` in the current directory or an ancestor directory.
+> - A file name `stack.yaml` in the global-project directory in the Stack root.
+>
+>The global configuration file (`config.yaml`) contains only non-project-specific options.
+
+#### Stack for shell scripts
+
+Stack can be also used for running scripts. From [fpcomplete](https://www.fpcomplete.com/haskell/tutorial/stack-script/):
+
+>Remembering to pass all of these flags on the command line is very tedious, error prone, and makes it difficult to share scripts with others. To address this, Stack has a [script interpreter](https://docs.haskellstack.org/en/stable/GUIDE/#script-interpreter) feature which allows these flags to be placed at the top of your script. Stack also has a dedicated script command which has some nice features like auto-detection of packages you need based on import statements.
+>
+>If we modify our http.hs to say:
+>
+>```bash
+>#!/usr/bin/env stack
+>-- stack --resolver lts-12.21 script
+>{-# LANGUAGE OverloadedStrings #-}
+>import qualified Data.ByteString.Lazy.Char8 as L8
+>import           Network.HTTP.Simple
+>
+>main :: IO ()
+>main = do
+>    response <- httpLBS "https://httpbin.org/get"
+>
+>    putStrLn $ "The status code was: " ++
+>               show (getResponseStatusCode response)
+>    print $ getResponseHeader "Content-Type" response
+>    L8.putStrLn $ getResponseBody response
+>```
+>
+>We can now run it by simply typing:
+>
+>```bash
+>stack http.hs
+>```
+>
+>Furthermore, on POSIX systems, that line at the top is known as the shebang. This means that, if you make your script executable, you can just run it like a normal program:
+>
+>```bash
+>chmod +x http.hs
+>./http.hs
+>```
+>
+>If you want to create self contained scripts, a script interpreter line at the top of your file is a highly recommended practice.
+
+## Code documentation
+
+Code documentation is usually done by [Haddock](https://haskell-haddock.readthedocs.io/en/latest/markup.html).
 
 ## Trivia
 
