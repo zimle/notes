@@ -1,12 +1,55 @@
 # Oracle databases
 
-## Login as sysdba without password
+## sqlplus
+
+[sqlplus](https://en.wikipedia.org/wiki/SQL_Plus) is the cli client for oracle databases shipped with the database.
+
+It can be installed on Windows *without* the database as follows:
+
+1. Download the following three [zips](https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html) for the version of your choice:
+
+    - Basic Package
+    - SQL*Plus Package
+    - Tools Package
+
+1. Unzip all three zips and merge the three folders `instantclient_your_version` into one target folder of your choice
+
+1. Add your target folder to your path.
+
+### Login as sysdba without password
 
 If being on the server, one can simply login to oracle with
 
 ```bash
 # does not work in git bash on windows ...
 sqlplus.exe / as sysdba
+```
+
+## Reading data
+
+Sometimes, one has to extract a document based object from the relational database.
+Doing this in one query might let the result set explode due to several `1:n` relations.
+Here is an example from [SO](https://stackoverflow.com/questions/70521073/posgressql-sql-to-generate-json-from-multiple-tables) (link provides an oracle example although mainly on postgres) how to retrieve the data as a document:
+
+```sql
+select row_to_json(customer) as customer_json
+from (
+  select customer.first_name "first_name" ,null as "test_null",
+    ( json_build_object('concatDeails' , customer.first_name||customer.last_name)  ) as "concatDeails",
+    (select json_agg(payment)
+     from (
+         select payment.payment_id "payment_id" ,payment.amount  "amount" from payment 
+         where payment.customer_id=customer.customer_id
+     ) payment
+     ) as payment ,
+    (select row_to_json(address)
+     from (
+         select address.address "address_details",CASE WHEN address.phone IS  NULL THEN 'NO_PHONE' ELSE address.phone  END as "phone_no_null",
+          address.phone as "phone", COALESCE(address.phone, 'NO_PHONE') as "phone_coalesce"
+         from address  where address.address_id=customer.address_id
+      ) address
+    ) as address
+    from customer as customer where customer_id=2 ) customer;
 ```
 
 ## Partitioning
@@ -665,3 +708,11 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     from my_table
     order by ts desc nulls last 
     ```
+
+- convert date to unix timestamp in milliseconds:
+
+    ```sql
+        select to_number(to_date('2022-10-31', 'yyyy-mm-dd') - to_date('1970-01-01', 'yyyy-mm-dd')) * (24 * 60 * 60 * 1000) from dual;
+    ```
+
+- drop table and everything with it: `drop table my_table cascade constraints purge`

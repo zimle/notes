@@ -78,3 +78,22 @@ For installing stuff, one might need to have root privileges. One way to do this
 ```bash
 docker exec -it -u root my_container_name bash
 ```
+
+## Run command from docker container
+
+One often needs to run binaries from within docker containers.
+There is a basic distinction how to do this:
+
+- `docker run`: run a command in a *new* Docker container
+- `docker exec`: execute a command on an *already running* Docker container
+
+To use the binaries, it is important to use the flag `--interactive` to keep `stdin` open and being able to interact with the binary:
+
+```bash
+# bad practice using the client of the container database
+# for postgres: see https://www.cybertec-postgresql.com/en/docker-sudden-death-for-postgresql/
+# get interactive shell
+docker exec --interactive docker-container-name sqlplus "connection_url"
+# execute command from stdin
+echo "select 1 from dual;" | docker exec --interactive docker-container-name sqlplus "connection_url"
+```

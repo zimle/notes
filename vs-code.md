@@ -5,8 +5,9 @@
 ## Key Bindings
 
 - Toggle word wrapping: `ALT + z`
+- Comment block / line of code via `CTRL+k CTRL+c` and uncomment via `CTRL+k CTRL+u`
 
-## Debugging plugings
+## Debugging plugins
 
 To see more output for plugin errors, try `CTRL+SHIFT+p`, choose `Developer: Show Logs` and choose `Extension Host`.
 Alternatively, check the output tab next to the console tab.

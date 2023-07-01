@@ -459,7 +459,7 @@ It does not quicken the loading, but running an `analyze` on a table after inser
 
 ### Set huge_pages=on on Linux
 
-See EnterpriseDB - Tuning](<https://www.enterprisedb.com/postgres-tutorials/introduction-postgresql-performance-tuning-and-optimization>)
+See [EnterpriseDB - Tuning](<https://www.enterprisedb.com/postgres-tutorials/introduction-postgresql-performance-tuning-and-optimization>)
 
 ### Synchronous commit
 
@@ -476,6 +476,40 @@ select * from my_table where id IN (sorted list)
 Usually, Postgres will take a look in an index (provided there is one). The data sits there side by side,but points to different buffers in the heap (aka. the actual table). Thus, Postgres will have to read a lot of buffers. When the table is clustered, the searched rows all sit all side by side, consuming much less buffers and thus IO as well as memory in the buffer cache. See also this article from [cybertec](https://www.cybertec-postgresql.com/en/cluster-improving-postgresql-performance/).
 
 Note that the ordering in the heap is *not* maintained: Inserts and update will break the ordering. Consider using [fillfactor](https://www.postgresql.org/docs/current/sql-createtable.html) on the tables to enable `HOT` (heap only tuple) updates. Also see this [cybertec article](https://www.cybertec-postgresql.com/en/what-is-fillfactor-and-how-does-it-affect-postgresql-performance/).
+
+Here is a [blog article](https://www.cybertec-postgresql.com/en/unexpected-downsides-of-uuid-keys-in-postgresql/) about performance penalties if the data is not physically ordered even if everything is in memory (in the article: random UUID vs number).
+
+## Reading data
+
+Sometimes, one has to extract a document based object from the relational database.
+Doing this in one query might let the result set explode due to several `1:n` relations.
+Here is an example from [SO](https://stackoverflow.com/questions/70521073/posgressql-sql-to-generate-json-from-multiple-tables) (link also provides an oracle example) how to retrieve the data as a document:
+
+```sql
+select 
+    json_build_object(
+      'first_name', customer.first_name ,
+      'concatDeails', json_build_object(
+            'conctant_name', customer.first_name || ' ' || customer.last_name
+      ),
+      'Address', json_build_object(
+            'city', address.city,
+            'Zip',  address.Zip
+        ),
+      'Payments', payment
+    ) 
+ from customer
+ left join address on address.customer_id = customer.id
+ left join (
+    select 
+        customer_id, 
+        array_agg(json_build_object(
+            'payment_id', payment_id, 'amount', amount, 'credit', credit
+        )) 
+    from payment 
+    group by customer_id
+ ) payment on payment.customer_id = customer.id;
+```
 
 ## Starting and stopping postgres
 
@@ -634,6 +668,35 @@ services:
       - "~/Projects/postgres/pg15/data:/var/lib/postgresql/data"
       - "~/Projects/postgres/pg15/logs:/logs"
 ```
+
+## Logging
+
+The path where postgres stores its current logfile can be found [as follows](https://stackoverflow.com/questions/67924176/where-are-the-postgres-logs)
+
+>On recent PostgreSQL versions, that is simple:
+>
+>```sql
+>SELECT  pg_current_logfile();
+>```
+>
+>For old versions, proceed as follows:
+>
+> - Verify that the logging collector is started:
+>
+>    ```sql
+>    SHOW logging_collector;
+>    ```
+>
+>   - If not, the location of the log depends on how PostgreSQL was started.
+>   - If yes, the log will be in log_directory:
+>
+>      ```sql
+>      SHOW log_directory;
+>      ```
+>
+>        If that is a relative path, it is relative to the PostgreSQL data directory.
+>
+>Since the log file is on the database server, you probably won't be able to access it with a client tool.
 
 ## Trivia
 

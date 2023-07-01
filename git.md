@@ -63,7 +63,7 @@ On the other hand, to enforce the quality checks for all team members, the pre-c
 
 ```bash
 git config core.hooksPath git-hooks
-# on linux, the file must be executable, so dont forget
+# on linux, the file must be executable, so don't forget
 chmod +x git-hooks/pre-commit
 ```
 
@@ -304,6 +304,8 @@ git log -pG password
 git diff other-branch -- build.gradle
 # diff a file (e.g. gradle.properties) between branch-1 and branch-2
 git diff branch-1 branch-2 -- build.gradle
+# diff the last change of a file
+git diff HEAD@{1} path/to/my/file.sql
 ```
 
 ## remote tracking
@@ -428,3 +430,5 @@ git commit --amend --reset-author --no-edit
     # useful for shell commands
     git --no-pager diff --name-only --pretty="" HEAD~10 HEAD
     ```
+
+- See all authors and commits that have contributed to a file: `git shortlog -- MyFile.java`

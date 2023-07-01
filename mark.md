@@ -1,5 +1,7 @@
 # Mark
 
+## General
+
 [Mark](https://github.com/kovetskiy/mark) is a cli tool to create html out of markdown files and publish them to Confluence. Mark supports certain "html tags" for meta data like
 
 ```html
@@ -18,6 +20,13 @@ or inserting some macros like table of contents
 <!-- Include: ac:toc -->
 ```
 
+## Mermaid
+
+`Mark` also supports rendering [mermaid diagrams](https://mermaid.js.org/syntax/flowchart.html) in two ways
+
+1. The Confluence plugin [Cloudscript.io Mermaid Addon](https://marketplace.atlassian.com/apps/1219878/cloudscript-io-mermaid-addon?tab=overview&hosting=cloud) is enabled. Then `mark` will use this plugin (default, to be explicit: `mermaid-go`)
+1. Mark renders the mermaid diagrams itself, creates temporary images and pushes them to confluence. Use the flag `--mermaid-provider mermaid-go` for this
+
 ## Publishing to Confluence
 
 [Mark](https://github.com/kovetskiy/mark) provides the following ways of running it:
@@ -26,12 +35,10 @@ or inserting some macros like table of contents
 - prebuilt binaries from the [releases](https://github.com/kovetskiy/mark/releases/) (only mac and linux)
 - docker (`kovetskiy/mark:latest`)
 
-I run it via docker and
+I run it via go (it is just a `go install github.com/kovetskiy/mark@latest` and adding paths) and
 
 ```bash
-# due to the mounting (flags -v -w), it does somehow not work in the windows git bash
-# and I use WSL
-docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:latest mark \
+mark --mermaid-provider mermaid-go \
     --title-from-h1 \
     --drop-h1 \
     --minor-edit \
@@ -125,7 +132,7 @@ find ./work-notes -name "*.md" -print0 |
     done
 
 # publish documents
-docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:latest mark \
+mark --mermaid-provider mermaid-go\
     --title-from-h1 \
     --drop-h1 \
     --minor-edit \
@@ -135,7 +142,7 @@ docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:l
     -p password \
     -f "$notes_target_folder/*.md"
 
-docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:latest mark \
+mark --mermaid-provider mermaid-go \
     --title-from-h1 \
     --drop-h1 \
     --minor-edit \

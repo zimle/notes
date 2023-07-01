@@ -176,3 +176,14 @@ sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
     ```
 
 - Baeldung [link](https://www.baeldung.com/linux/job-control-disown-nohup) about running jobs in the background
+
+- Some commands like `rm` do not offer a `--dry-run` flag, e.g. when using something destructive like `rm **/*.orig`. This can sometimes be imitated by using `echo **/*.orig`, as it is the shell expanding the globbing and not the command itself.
+
+- download files
+
+    ```bash
+    # via curl
+    curl -LO https://my-site.com/my-file.tar.gz
+    # via wget
+    wget https://my-site.com/my-file.tar.gz
+    ```
