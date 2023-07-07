@@ -20,3 +20,9 @@ curl -u $user:$pwd "https://my_confluenc_base_url/rest/api/space/"
 ## Tools
 
 - [Mark](https://github.com/kovetskiy/mark) is a cli tool to publish markdown files to confluence
+
+## Bugs
+
+- whenever a colon is contained in the page title, confluence [will not find attachments](https://jira.atlassian.com/browse/CONFSERVER-26803) (like in the multimedia macro)
+
+- Confluence might not - depending on the browser - show videos that are [encoded with h265](https://confluence.atlassian.com/confkb/video-will-not-play-for-mp4-uploaded-files-1047539606.html). Audio will work. Instead, use the codec h264. Fair enough, this is actually no Confluence issue

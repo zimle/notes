@@ -167,6 +167,13 @@ For example, to remove leading and trailing whitespace, use
 sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
 ```
 
+Here are some other common use cases
+
+```bash
+# replace old with new for every case *in*-sensitive match 
+sed 's/old/new/gI'
+```
+
 ## Trivia
 
 - find all classes-folder (windows) and using [rust version of find](https://github.com/sharkdp/fd):

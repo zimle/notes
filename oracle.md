@@ -555,7 +555,9 @@ impdp system/pwd@MY_DB  directory=DATA_PUMP_DIR full=Y dumpfile=FULL_EXPORT.dmp 
 Some template for creating a user with corresponding schema:
 
 ```sql
+-- USER
 CREATE USER MY_NEW_USER IDENTIFIED BY MY_SECRET_PASSWORD DEFAULT TABLESPACE USERS TEMPORARY TABLESPACE TEMP;
+-- ROLES
 GRANT CONNECT,RESOURCE TO MY_NEW_USER;
 GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
 ```
@@ -716,3 +718,14 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     ```
 
 - drop table and everything with it: `drop table my_table cascade constraints purge`
+
+- [quota](https://www.orafaq.com/wiki/Quota) is the amount of space allocated to a user in a tablespace:
+
+    ```sql
+    -- restrict to 10M
+    ALTER USER scott QUOTA 10M ON users;
+    -- allow unlimited
+    ALTER USER scott QUOTA unlimited ON users;
+    -- query, a quota value of -1 indicated UNLIMITED
+    SELECT * FROM user_ts_quotas;
+    ```

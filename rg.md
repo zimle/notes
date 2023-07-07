@@ -9,4 +9,6 @@
 rg -l foo
 # case insensitive search
 rg -i FoO
+# do not print line number
+rg -N foo
 ```

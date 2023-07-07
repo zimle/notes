@@ -432,3 +432,5 @@ git commit --amend --reset-author --no-edit
     ```
 
 - See all authors and commits that have contributed to a file: `git shortlog -- MyFile.java`
+
+- get the content of a file in the version of another branch: `git show other-branch:path/to/desired-file.md`

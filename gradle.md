@@ -100,6 +100,58 @@ According to the [gradle docs](https://docs.gradle.org/current/userguide/build_e
 
 4. gradle.properties in Gradle installation directory, e.g. `/c/Tools/gradle/gradle-7.4/bin/gradle`. `9 mins 29.287 secs.`
 
+## Remote debugging
+
+If running an application like Spring Boot with gradle via the gradle plugin, a typical gradle task to run the application looks like
+
+```bash
+# specify server port as an example when running multiple instances
+./gradlew bootRun --args="--spring.profiles.active=profile1,profile2 --server.port=8082"
+```
+
+If providing the flag [--debug-jvm](https://docs.gradle.org/current/userguide/application_plugin.html#sec:application_usage) like in
+
+```bash
+# now with flag --debug-jvm
+./gradlew bootRun  --debug-jvm --args="--spring.profiles.active=profile1,profile2 --server.port=8082"
+```
+
+the log will spit out some chunk like
+
+```bash
+> Task :bootRun
+Listening for transport dt_socket at address: 5005
+```
+
+Note that the service is only started as soon as someone is listening to the port. However, these parameters are [configurable](https://docs.gradle.org/current/userguide/command_line_interface.html#sec:command_line_debugging) since gradle 8. The defaults are:
+
+- `-Dorg.gradle.debug=true`: Debug gradle daemon process
+- `-Dorg.gradle.debug.host`: By default, no host address is passed to JDWP, so on Java 9 and above, the loopback address is used, while earlier versions listen on all interfaces
+- `-Dorg.gradle.debug.port=5005`
+- `-Dorg.gradle.debug.server=true`
+- `-Dorg.gradle.debug.suspend=true`
+- `-Dorg.gradle.daemon.debug=true`: duplicate of `-Dorg.gradle.debug`
+
+Hence, in any IDE, one can use this port and debug the application. For example, in VS Code, this can be done in the `.vscode/launch.json` via
+
+```json
+{
+  "configurations": [
+    ...,
+    {
+      "type": "java",
+      "name": "Java port 5005",
+      "projectName": "my-spring-service",
+      "request": "attach",
+      "hostName": "127.0.0.1",
+      "port": 5005
+    },
+  ]
+}
+```
+
+and launched in the `run and debug` perspective of vs code.
+
 ## Trivia
 
 - to specify the java version (e.g. when `JAVA_HOME` is older than Java version in project), one can specify it via the flag `-Dorg.gradle.java.home=myJavaPath`, e.g. `./gradlew build -Dorg.gradle.java.home=myJavaPath`.
