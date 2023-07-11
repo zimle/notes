@@ -43,7 +43,7 @@ psql -h localhost -U my_user -d my_db -f my/relative/or/absolute/path.sql
 
 ## Trivia
 
-- to see the internal sql commands `psql`, e.g.
+- to see the internal sql commands of `psql`, e.g.
 
     ```bash
     postgres=# \l

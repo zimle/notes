@@ -601,6 +601,26 @@ Another way:
   3. [postgres number format](https://www.crunchydata.com/blog/choosing-a-postgresql-number-format)
   4. [Ordering Table Columns in PostgreSQL](https://docs.gitlab.com/ee/development/database/ordering_table_columns.html#ordering-table-columns-in-postgresql "Permalink") has a table of column sizes
 
+### Search path
+
+Postgres has a way of resolving the schema where to execute statements if not specified in the query, the [search path](https://www.postgresql.org/docs/current/ddl-schemas.html):
+
+```sql
+-- show search paths
+my_user=> show search_path;
+   search_path
+-----------------
+ "$user", public
+(1 row)
+-- specify the schema where to get data from:
+select * from public.my_table;
+-- do not specify the schema: if my_user.my_table exists, use this table,
+-- else look for table public.my_table
+select * from my_table;
+-- alter search path:
+SET search_path TO "$user", fallback, public;
+```
+
 ## Sharding
 
 - [citus](https://github.com/citusdata/citus)
