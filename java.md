@@ -55,9 +55,9 @@ iconv -f iso-8859-1 -t utf-8 my_jstack.folded > my_jstack_utf8.folded
 ~/projects/FlameGraph/stackcollapse-jstack.pl stack.txt | iconv -f iso-8859-1 -t utf-8 > stack.folded && ~/projects/FlameGraph/flamegraph.pl --color=java stack.folded > stack.svg
 ```
 
-## Programming
+## Effective Java (Josh Bloch)
 
-### Immutablility
+### Item 17: Minimize Mutability
 
 A class has to satisfy five conditions to be immutable, here an extract from item 17 of Joshua Bloch's [Effective Java](https://www.oreilly.com/library/view/effective-java-3rd/9780134686097/):
 
@@ -97,6 +97,60 @@ Disadvantages:
 - The major disadvantage of immutable classes is that they require a separate object for each distinct value, especially when objects are big. Ideas to cirumvent this:
   - If costly operations are predictable, implement them with a package-private companion class that does several steps with a mutable object and finally returns an immutable object (see `BigInteger` with modular exponentitation)
   - If not predicatable, provide a public companion class like `StringBuilder`
+
+### Item 18: Favor composition over inheritance
+
+Inheritance violates encapsulation: Implementation of superclass may change from release to release, and subclass must involve in tandem.
+
+Inheritance can be safely used:
+
+- within the same package
+- on classes which are specifically designed and documented for extension
+
+Inheritance is appropriate:
+
+- when a genuine subtype relationship exists between subclass and superclass (though fragile when not within the same package)
+
+Use composition (just pass the class you need into the constructor and forward all methods needed, in other words wrap it).
+
+### Item 28: Prefer Lists to Arrays
+
+Arrays differ from lists in two fundamental ways:
+
+- Arrays are *covariant* (`Sub[]` is subclass of `Super[]`) whereas lists are *invariant* (`List<T>` and `List<U>` are unrelated for `T != U`):
+
+    ```java
+    // Fails at runtime
+    Object[] objectArray = new Long[1];
+    objectArray[0] = "I don't fit in"; // throws ArrayStoreException
+
+    // Won't compile
+    List<Object> ol = new ArrayList<Long>(); // Incompatible types
+    ol.add("I don't fit in");
+    ```
+
+- Arrays are *reified*, meaning that arrays know and enforce there types at runtime.
+    Generics, by contrast, are erasured at compile time and none of the following will compile:
+
+    ```java
+        new List<E>[]
+        List<String>[]
+        new E[]
+    ```
+
+    This is good as we could otherwise create bugs easily:
+
+    ```java
+    List<String>[] stringLists = new List<String>[1]; // won't compile, but assume
+    List<Integer> intList = List.of(42);
+    Object[] objects = stringLists; // ok because arrays are covariant
+    objects[0] = intList; // runtype type of stringLists is List[] and of intList is List due to type erasure, so perfectly fine
+    String s = stringLists[0].get(0); // compiler assures we get a string, but it is an Integer!
+    ```
+
+  - Hint: the only parametrized types that are *reifiable* are unbounded wildcard types such as `List<?>` or `Map<?,?>`
+
+In summary, arrays and lists do not mix well. As type safety on compile time is much more precious, prefer lists over arrays if not *proven* to be a performance leak.
 
 ## Trivia
 

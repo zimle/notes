@@ -308,6 +308,8 @@ floor(random() * 10 + 1)::int
 md5(random()::text);
 -- create random string of length of maximum 10
 left(md5(random()::text), 10)
+-- create random date from '2000-01-01' to approximately '2010-01-08'
+'2000-01-01'::date + trunc(random() * 366 * 10)::int
 ```
 
 ## Setting up database
@@ -520,7 +522,7 @@ Doing this in one query might let the result set explode due to several `1:n` re
 Here is an example from [SO](https://stackoverflow.com/questions/70521073/posgressql-sql-to-generate-json-from-multiple-tables) (link also provides an oracle example) how to retrieve the data as a document:
 
 ```sql
-select 
+select
     json_build_object(
       'first_name', customer.first_name ,
       'concatDeails', json_build_object(
@@ -531,16 +533,16 @@ select
             'Zip',  address.Zip
         ),
       'Payments', payment
-    ) 
+    )
  from customer
  left join address on address.customer_id = customer.id
  left join (
-    select 
-        customer_id, 
+    select
+        customer_id,
         array_agg(json_build_object(
             'payment_id', payment_id, 'amount', amount, 'credit', credit
-        )) 
-    from payment 
+        ))
+    from payment
     group by customer_id
  ) payment on payment.customer_id = customer.id;
 ```
