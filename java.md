@@ -15,6 +15,20 @@ You can use JVisualVM (`%JAVA_HOME%/bin/jvisualvm.exe`), but to use it with JUni
 
 If you wish to profile a specific section of the test, then setting a breakpoint before and after will enable you to start / stop profiling.
 
+## Tooling within jdk
+
+The jdk (at least more modern ones) provide some [nice toolings](https://docs.oracle.com/en/java/javase/17/docs/specs/man/index.html).
+Here is an (to be extended) list:
+
+- `javap`: Java disassembler providing information about classes and interfaces:
+
+    ```bash
+    # print put public accessors
+    javap MyClass1.class MyClass$MyInnerClass.class
+    # also print private members (note there is also -protected, -package, -verbose etc.)
+    javap -p MyClass1.class MyClass$MyInnerClass.class
+    ```
+
 ## Performance
 
 Tools

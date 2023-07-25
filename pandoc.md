@@ -9,6 +9,9 @@
 cat /dev/clipboard | pandoc -f jira -t markdown
 # converting a webpage to markdown and output as stdout
 pandoc -s -r html https://docs.oracle.com/en/database/oracle/oracle-database/19/vldbg/view-info-partition-tables-indexes.html#GUID-2D424638-511C-4CC3-9BDE-53FFB1686ECD -t markdown
+# convert markdown into javadoc (with small manual adaptions afterwards)
+# read from stdin, write to stdout
+pandoc -f markdown -t html | sed 's/^/ * /g'
 ```
 
 ## Convert options

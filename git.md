@@ -295,6 +295,8 @@ git log -S password
 git log -G password
 # to additionally see the diffs, use the flag -p (for patch), e.g.
 git log -pG password
+# show git history as graph / tree (adog)
+git log --all --decorate --oneline --graph
 ```
 
 ## git diff
@@ -311,12 +313,18 @@ git diff HEAD@{1} path/to/my/file.sql
 ## remote tracking
 
 ```bash
+# find out which repo urls are tracked by local repo
+git remote -v
 # find out which local branches track which remote branches
 git branch -vv
 # set current branch to track on upstream branch foo
 git branch -u upstream/foo
 # set local branch bar to track on upstream branch foo
 git branch -u upstream/foo bar
+# Remove from local branch the link to the upstream branch that is tracked
+git branch --unset-upstream
+# Add repo on server (like github) as upstream to local branch
+git remote add upstream https://github.com/jgm/pandoc.git
 ```
 
 ## Mass changes like formatting

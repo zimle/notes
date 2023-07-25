@@ -174,6 +174,40 @@ Here are some other common use cases
 sed 's/old/new/gI'
 ```
 
+## cdpath
+
+Shells like the bash often provide a special path for changing directories: `$CDPATH`.
+When doing `cd`, the shell will look for the first subdirectory match of the directories listed in `$CDPATH` and jump into this directory.
+
+Lets imagine having the folder `open-source` somewhere:
+
+```bash
+ls /d/open-source/ | tr ' ' '\n'
+assertj
+junit5
+localstack-java-utils
+mark
+modern-java-practices
+pgjdbc
+postgres
+spring-batch
+spring-integration
+testcontainers-java
+```
+
+Now export `$CDPATH` in your `~/.bashrc`, `~/.zshrc` or whatever like `export CDPATH=$CDPATH:"/d/open-source"`.
+After sourcing the rc file (like `source ~/.bashrc`), your shell will cd into specified directories automatically:
+
+```bash
+pwd
+/c/Users/Me
+cd postgres
+pwd
+/d/open-source/postgres
+```
+
+Note that even `export CDPATH=$CDPATH:".."` works, meaning that you always can jump into a "sibling" directory.
+
 ## Trivia
 
 - find all classes-folder (windows) and using [rust version of find](https://github.com/sharkdp/fd):

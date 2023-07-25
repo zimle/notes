@@ -5,6 +5,9 @@
 ## Key Bindings
 
 - Toggle word wrapping: `ALT + z`
+- Toggle full screen `F11`
+- Toggle side bar `CTRL+B`
+- Close all files `CTRL+K CTRL+W`
 - Comment block / line of code via `CTRL+k CTRL+c` and uncomment via `CTRL+k CTRL+u`
 - If having a window open with diffs:
   - next change: `ALT+F5`

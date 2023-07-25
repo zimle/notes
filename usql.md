@@ -214,6 +214,14 @@ $ usql odbc+DB2://user:pass@localhost/dbname
 $ usql odbc+PostgreSQL+ANSI://user:pass@localhost/dbname?TraceFile=/path/to/trace.log
 ```
 
+## Copy data between databases
+
+Also see [good documentation](https://github.com/xo/usql#copying-between-databases). Here an example:
+
+```bash
+\copy oracle://ora_user:ora_pwd@localhost/sid pg://pg_user:pg_pwd@localhost:5432/net 'select c1, c2, c3 from tableA where c4 = \'my_value\'' 'table_a(c1, c2, c3)'
+```
+
 ## Trivia
 
 -

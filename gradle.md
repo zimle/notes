@@ -152,6 +152,18 @@ Hence, in any IDE, one can use this port and debug the application. For example,
 
 and launched in the `run and debug` perspective of vs code.
 
+## Javadoc
+
+To create the java doc via gradle, simply run `./gradlew javadoc`. If the task is not yet available, one has to create the task in the `build.gradle` [like](https://www.baeldung.com/java-gradle-javadoc)
+
+```groovy
+javadoc {
+    destinationDir = file("${buildDir}/docs/javadoc")
+    include 'com/baeldung/addition/**'
+    exclude 'com/baeldung/subtraction/**'
+}
+```
+
 ## Trivia
 
 - to specify the java version (e.g. when `JAVA_HOME` is older than Java version in project), one can specify it via the flag `-Dorg.gradle.java.home=myJavaPath`, e.g. `./gradlew build -Dorg.gradle.java.home=myJavaPath`.

@@ -132,3 +132,11 @@ public enum JobAction {
     }
 }
 ```
+
+## Trivia
+
+- Easy to understand, simple to forget: Code sharing with Spring is difficult:
+
+  - classes used by the framework (e.g. a `Step` in Spring Batch) must be annotated with `@Bean` to work properly
+  - beans are - per default - instantiated only once!
+  - so calling the method with different arguments will give constant (i.e. not the desired) behaviour at runtime

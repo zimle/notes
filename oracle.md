@@ -180,6 +180,24 @@ exec DBMS_STATS.GATHER_SCHEMA_STATS(OWNNAME=>'MY_SCHEMA', estimate_percent => db
 exec DBMS_STATS.GATHER_TABLE_STATS(OWNNAME=>'MY_SCHEMA', tabname=>'MY_TABLE', estimate_percent => dbms_stats.auto_SAMPLE_SIZE, CASCADE =>TRUE, degree=>4,no_invalidate=>false);
 ```
 
+## Window functions
+
+```sql
+-- statement to compute the difference between dates of subsequent row
+-- and filter out those rows where the distance is greater than 12 months
+with date_distance as (
+    select
+    id,
+    lag(my_date) over (partition by id order by my_date) as previous_date,
+    my_date as current_date,
+    months_between(my_date, lag(my_date) over (partition by id order by id, my_date)) as month_diff
+    from my_table
+)
+select * from date_distance
+where month_diff > 12
+fetch first 10 rows only
+```
+
 ## Test / Fake data generation
 
 ```sql
