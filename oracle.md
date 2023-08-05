@@ -747,3 +747,5 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     -- query, a quota value of -1 indicated UNLIMITED
     SELECT * FROM user_ts_quotas;
     ```
+
+- Check db parameters (like encoding) `select * from nls_database_parameters;`

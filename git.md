@@ -173,6 +173,8 @@ git stash apply stash@{5}
 git stash save name-i-can-remember
 # apply stash with meaningful name
 git stash apply name-i-can-remember
+# show changes in the latest stash entry (-p for show as patch)
+git stash show -p # or git stash show -p stash@{0}
 ```
 
 To play with different areas where stash will move the changes to "temp", consider the following scenario
