@@ -11,4 +11,6 @@ rg -l foo
 rg -i FoO
 # do not print line number
 rg -N foo
+# also search in files ignored by git
+rg --no-ingore foo
 ```

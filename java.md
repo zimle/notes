@@ -36,6 +36,14 @@ Tools
 - `jps` like the unix `ps` lists all java process ids currently running
 - `jstack` prints java stacktraces
 - the [java flight recorder](https://docs.oracle.com/javacomponents/jmc-5-4/jfr-runtime-guide/about.htm#JFRUH171)
+  - JDK below 11: start the JVM with args `-XX:+UnlockCommercialFeatures -XX:+FlightRecorder` (order is important!)
+  - start recording:
+    - either use directly `java mission control` (executable `jmc`) in your `jdk` bin folder
+    - or use `jcmd` executable in your `jdk` bin folder via `jcmd 1234 JFR.start duration=100s filename=flight.jfr` (example).
+      See the [official documentation](https://docs.oracle.com/javacomponents/jmc-5-4/jfr-runtime-guide/comline.htm#JFRUH190) for available flags.
+    - be sure to stop the recording via `jcmd 1234 JFR.stop` at some time if no duration given.
+      If using `java mission control`, right click on the flight recording and dump it to see information
+  - start viewing via `java mission control` (executable `jmc`)
 
 ## Heap Dumps
 

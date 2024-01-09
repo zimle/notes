@@ -755,6 +755,14 @@ The path where postgres stores its current logfile can be found [as follows](htt
 >
 >Since the log file is on the database server, you probably won't be able to access it with a client tool.
 
+## pg_dump
+
+```bash
+# extract create statement for table and its indexes
+# must be executed on the server side
+pg_dump -U my_user my_database -t my_table --schema-only
+```
+
 ## Trivia
 
 - the [crunchydata playground](https://www.crunchydata.com/developers/tutorials) allows for many interactive tutorials, including postgres in the browser.

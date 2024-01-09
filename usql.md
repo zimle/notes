@@ -222,6 +222,22 @@ Also see [good documentation](https://github.com/xo/usql#copying-between-databas
 \copy oracle://ora_user:ora_pwd@localhost/sid pg://pg_user:pg_pwd@localhost:5432/net 'select c1, c2, c3 from tableA where c4 = \'my_value\'' 'table_a(c1, c2, c3)'
 ```
 
+Some helpful command to create a usql copy command from one database to postgres, where there might be more columns in the source table:
+
+```sql
+-- create usql copy command to copy values for all but some columns to postgres
+with comma_sep as (
+    select
+    string_agg(column_name, ',' order by ordinal_position) as agg
+    from information_schema.columns
+    where table_name = 'my_table'
+)
+select
+concat('\copy oracle://ora_user:ora_pwd@localhost/my_sid pg://pg_user:pg_pwd@localhost:5432/my_db'
+' ''select ' || agg || ' from my_table where filter_column = \''111\''' || '''',  ' ''my_table(' || agg || ')''')
+from comma_sep
+```
+
 ## Trivia
 
 -

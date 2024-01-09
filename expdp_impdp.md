@@ -69,3 +69,11 @@ expdp hr FULL=YES DUMPFILE=dpump_dir1:full1%U.dmp, dpump_dir2:full2%U.dmp FILESI
 ```
 
 Be **sure** that your user has all necessary privileges for the objects like `DATAPUMP_EXP_FULL_DATABASE` to export users, tablespaces etc. Otherwise, you get a dump without users which one has to recreate manually on the target database.
+
+## Trivia
+
+- to use the clause `as sysdba`, the following would be a valid (git) bash command:
+
+    ```bash
+    expdp \"sys/MY_PW@MY_IP:1521/MY_SID as sysdba\" PARFILE=my.par
+    ```

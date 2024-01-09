@@ -164,6 +164,10 @@ javadoc {
 }
 ```
 
+## Eclipse
+
+There is an Eclipse plugin for gradle that can create the necessary Eclipse files (like the `.project`) to import the gradle project as a native Eclipse project. The command `./gradlew eclipse` generates the necessary file. As always, check out via `./gradlew tasks help`.
+
 ## Trivia
 
 - to specify the java version (e.g. when `JAVA_HOME` is older than Java version in project), one can specify it via the flag `-Dorg.gradle.java.home=myJavaPath`, e.g. `./gradlew build -Dorg.gradle.java.home=myJavaPath`.

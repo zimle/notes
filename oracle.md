@@ -16,6 +16,17 @@ It can be installed on Windows *without* the database as follows:
 
 1. Add your target folder to your path.
 
+### Encoding
+
+NLS_LANG cannot be changed for the session in sqlplus, but must be set as an environment variable *before* starting sqlplus:
+
+```bash
+# unix
+export NLS_LANG=GERMAN_GERMANY.UTF8
+# windows
+set NLS_LANG=GERMAN_GERMANY.UTF8
+```
+
 ### Login as sysdba without password
 
 If being on the server, one can simply login to oracle with
@@ -24,6 +35,10 @@ If being on the server, one can simply login to oracle with
 # does not work in git bash on windows ...
 sqlplus.exe / as sysdba
 ```
+
+## Meta tables
+
+List of meta tables can be found [here](https://docs.oracle.com/cd/E11882_01/nav/catalog_views.htm).
 
 ## Reading data
 
@@ -84,9 +99,11 @@ ALTER TABLE demo_list_list TRUNCATE SUBPARTITION boeing_sunday;
 ALTER TABLE demo_list_list TRUNCATE SUBPARTITION FOR (1,1)
 ```
 
+Don't forget to reindex global indexes that might get have been invalidated by `alter index my_index rebuild`.
+
 ### Indexes and partitions
 
-Global indexes are `UNUSABLE` when tuncating a partition or subpartition. They can be looked up in `USER_INDEXES`. Note that `N/A` means that the index is partitioned, so its status has to be looked up in `USER_IND_PARTITIONS` (if index is on partition level) or `USER_IND_SUBPARTITIONS` (if index is on subpartition level).
+Global indexes are `UNUSABLE` when truncating a partition or subpartition. They can be looked up in `USER_INDEXES`. Note that `N/A` means that the index is partitioned, so its status has to be looked up in `USER_IND_PARTITIONS` (if index is on partition level) or `USER_IND_SUBPARTITIONS` (if index is on subpartition level).
 
 ### Add feature partitioning
 
@@ -282,6 +299,76 @@ alter index my_index parallel noparallel;
 ```
 
 ## Tablespaces / Disk usage
+
+- [reclaiming unused space in datafiles](https://dba.stackexchange.com/questions/192625/oracle-shrinking-reclaiming-free-tablespace-space) :
+
+- find out tablespace usage:
+
+    ```sql
+    select
+    fs.tablespace_name                          Tablespace,
+    (df.totalspace - fs.freespace)              used_mb,
+    fs.freespace                                free_mb,
+    df.totalspace                               total_mb,
+    round(100 * (fs.freespace / df.totalspace)) free_perc
+    from
+    (select
+        tablespace_name,
+        round(sum(bytes) / 1048576) TotalSpace
+    from
+        dba_data_files
+    group by
+        tablespace_name
+    ) df,
+    (select
+        tablespace_name,
+        round(sum(bytes) / 1048576) FreeSpace
+    from
+        dba_free_space
+    group by
+        tablespace_name
+    ) fs
+    where 1=1
+    and df.tablespace_name = fs.tablespace_name
+    ;
+    ```
+
+- find [unused space](https://asktom.oracle.com/pls/apex/asktom.search?tag=shrink-partition-table):
+
+    ```sql
+    select
+        table_name,round((blocks*8),2) "size (kb)" , 
+        round((num_rows*avg_row_len/1024),2) "actual_data (kb)",
+        (round((blocks*8),2) - round((num_rows*avg_row_len/1024),2)) "WASTED SPACE (kb)"
+    from 
+        dba_tables
+    where 
+        (round((blocks*8),2) > round((num_rows*avg_row_len/1024),2))
+    order by 4 desc;
+    ```
+
+- create shrink statements:
+
+    ```sql
+    with to_be_shrinked as (
+        select distinct
+        owner, segment_name
+        from dba_segments
+        where 1=1
+        and segment_type in ('TABLE', 'TABLE PARTITION', 'TABLE SUBPARTITION')
+        and tablespace_name = 'USERS'
+        and owner <> 'UT2'
+        and bytes > 1048576 -- 1 mb
+        order by owner, segment_name
+    )
+    select
+    'ALTER TABLE ' || owner || '.' || segment_name || ' ENABLE ROW MOVEMENT;' || chr(10) ||
+    'ALTER TABLE ' || owner || '.' || segment_name || ' SHRINK SPACE CASCADE;' || chr(10) ||
+    'ALTER TABLE ' || owner || '.' || segment_name || ' DISABLE ROW MOVEMENT;' || chr(10)
+    from to_be_shrinked
+    ```
+
+    Do not forget to run the [gather stats commands](#statistics) afterwards!
 
 ### Add DBF File
 
@@ -580,6 +667,21 @@ GRANT CONNECT,RESOURCE TO MY_NEW_USER;
 GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
 ```
 
+## External tables
+
+Sometimes, one needs to determine where Oracle reads an external table from (i.e. the file).
+Here is a [blog post](https://mikesmithers.wordpress.com/2017/05/22/dude-wheres-my-file-finding-external-table-files-in-the-midst-of-another-general-election/).
+
+Useful meta-tables are `dba_directories` and `all_external_locations` (and its derivatives `user`, `dba`).
+
+## Tips setting up an Oracle database
+
+- Check the autoextend of the data files. The standard of 160 bytes is far too low. Try something like
+
+    ```sql
+    ALTER DATABASE DATAFILE '/opt/oracle/oradata/ORCLCDB/MY_PDB/users01.dbf' AUTOEXTEND ON NEXT 100M;
+    ```
+
 ## Useful trivia
 
 - the keyword `USER` resolves to the schema name (?) the current user is connected with (usually, in Oracle, user and schema coincide), e.g. `select * from all_tab_cols where owner = user` only shows the record of the schema corresponding to the user that is logged in.
@@ -662,6 +764,9 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
 
 - change user password: `ALTER USER my_user IDENTIFIED BY MyNewPassword123`
 
+- to set password life time to unlimit, use `alter profile "DEFAULT" limit password_life_time unlimited`.
+    If already encountering `ORA-28002`, do not forget to reset your password.    Also see this [blog post](https://blogs.oracle.com/sql/post/how-to-fix-ora-28002-the-password-will-expire-in-7-days-errors)
+
 - see segment space used by tables: Use the view `user_segments`
 
 - get `DDL` statement like create from existing object: `select dbms_metadata.get_ddl( 'TABLE', 'MY_TABLE', 'MY_SCHEMA') FROM dual`
@@ -673,39 +778,6 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     SELECT B.Owner, B.Object_Name, A.Oracle_Username, A.OS_User_Name
     FROM V$Locked_Object A, All_Objects B
     WHERE A.Object_ID = B.Object_ID;
-    ```
-
-- [reclaiming unused space in datafiles](https://dba.stackexchange.com/questions/192625/oracle-shrinking-reclaiming-free-tablespace-space) :
-
-- find out tablespace usage:
-
-    ```sql
-    select
-    fs.tablespace_name                          Tablespace,
-    (df.totalspace - fs.freespace)              used_mb,
-    fs.freespace                                free_mb,
-    df.totalspace                               total_mb,
-    round(100 * (fs.freespace / df.totalspace)) free_perc
-    from
-    (select
-        tablespace_name,
-        round(sum(bytes) / 1048576) TotalSpace
-    from
-        dba_data_files
-    group by
-        tablespace_name
-    ) df,
-    (select
-        tablespace_name,
-        round(sum(bytes) / 1048576) FreeSpace
-    from
-        dba_free_space
-    group by
-        tablespace_name
-    ) fs
-    where 1=1
-    and df.tablespace_name = fs.tablespace_name
-    ;
     ```
 
 - to get an explain plan:
@@ -749,3 +821,37 @@ GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
     ```
 
 - Check db parameters (like encoding) `select * from nls_database_parameters;`
+
+- Check size of data files: `select * from dba_data_files`.
+
+- to copy data within all tables changing only one column value (which must be in all tables like customer), one can create insert statements via:
+
+    ```sql
+    -- just copy the data changing column customer (expected to be a column in all tables)
+    with cols as (
+        select 
+        table_name,
+        -- listagg(column_name, ', ') WITHIN group (order by column_name) as comma_sep_cols
+        -- will blow the varchar2(4000) limit
+        -- trick around with xmlagg
+        rtrim(xmlagg(xmlelement(e, column_name, ',').extract('//text()') order by column_name).getclobval(), ',') as comma_sep_cols
+        from user_tab_cols
+        where 1=1
+        and (
+            table_name like 'CUST%'
+            or table_name like '...%'
+        )
+        and virtual_column = 'NO'
+        and data_type <> 'RAW'
+        and hidden_column = 'NO'
+        and user_generated = 'YES'
+        and column_name <> 'CUSTOMER' -- will be manually overwritten
+        and table_name not in ('...')
+        group by table_name
+    )
+    select
+    'insert into ' || table_name || ' (CUSTOMER,' || comma_sep_cols || ') ' || 
+    'select ''Brown'' as CUSTOMER,' || comma_sep_cols || ' from ' || table_name || ' where CUSTOMER = ''Fox'';' -- beware of correct source and target customer
+    from cols
+    order by table_name
+    ```

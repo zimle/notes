@@ -124,3 +124,39 @@ erDiagram
 ```
 
 Hence, to empty all Spring Batch meta tables, it suffices to execute `truncate batch_job_instance cascade`.
+
+## Late binding
+
+The [Spring Batch docs](https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#late-binding) say that one is able to read single keys from a map like
+
+```java
+@StepScope
+@Bean
+public FlatFileItemReader flatFileItemReader(@Value("#{stepExecutionContext['input.file.name']}") String name) {
+ return new FlatFileItemReaderBuilder<Foo>()
+   .name("flatFileItemReader")
+   .resource(new FileSystemResource(name))
+   ...
+}
+```
+
+but it also works - at least - with the object `StepExecution` which is not a map:
+
+```java
+@Bean
+@StepScope
+public IdBoundaryPartitioner idBoundaryPartitioner(
+        DataSource source,
+        @Value("#{jobParameters['" + JobMessage.CLIENT_KEY + "']}") String client,
+        @Value("#{stepExecution}") StepExecution stepExecution,
+        @Value("#{jobParameters}") Map<String, Object> jobParameters
+) {
+    log.debug("JobParameters {}", jobParameters);
+    log.debug("StepExecution {}", stepExecution);
+    log.debug("stepExecution ID {}", stepExecution.getId());
+    log.debug("stepExecution getJobExecutionId {}", stepExecution.getJobExecutionId());
+    return new IdBoundaryPartitioner(source, client);
+}
+```
+
+This might be useful to put in the job id of a manager into the `Partitioner` such that workers can reload a cache when the overall job changes (starts again).

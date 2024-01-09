@@ -172,6 +172,8 @@ Here are some other common use cases
 ```bash
 # replace old with new for every case *in*-sensitive match 
 sed 's/old/new/gI'
+# replace comma between to digits by decimal point
+sed -E 's/([[:digit:]]),([[:digit:]])/\1.\2/g'
 ```
 
 ## cdpath

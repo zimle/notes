@@ -14,6 +14,13 @@ pandoc -s -r html https://docs.oracle.com/en/database/oracle/oracle-database/19/
 pandoc -f markdown -t html | sed 's/^/ * /g'
 ```
 
+Note that pandoc needs utf-8 as input and returns utf-8.
+To store the output in clipboard with `clip` in windows, it is advisable to transform the output to `utf-16le` (UTF-16 with Little Endian BOM) and then store the result in clipboard like
+
+```bash
+cat /dev/clipboard | pandoc -f jira -t markdown | iconv -f utf-8 -t utf-16le | clip
+```
+
 ## Convert options
 
 From all the [convert options](https://pandoc.org/chunkedhtml-demo/3.1-general-options.html), here are the [markdown variants](https://pandoc.org/MANUAL.html#markdown-variants):

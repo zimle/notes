@@ -297,6 +297,8 @@ git log -S password
 git log -G password
 # to additionally see the diffs, use the flag -p (for patch), e.g.
 git log -pG password
+# filter for commits that have 'jira-ticket' in their commit message
+git log --grep jira-ticket
 # show git history as graph / tree (adog)
 git log --all --decorate --oneline --graph
 ```
@@ -444,3 +446,5 @@ git commit --amend --reset-author --no-edit
 - See all authors and commits that have contributed to a file: `git shortlog -- MyFile.java`
 
 - get the content of a file in the version of another branch: `git show other-branch:path/to/desired-file.md`
+
+- apply patch changes only for a specific file: `git apply my.patch --include=my/ultra/long/java/path/to/class.java`
