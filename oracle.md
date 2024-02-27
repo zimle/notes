@@ -646,7 +646,7 @@ This can take a *long* time (up tp 45 minutes).
 To import data, we have to copy the data into the docker container via
 
 ```bash
-docker-compose docker cp /mnt/path/to/FULL_EXPORT.dmp oracle193:/opt/oracle/admin/ORCLCDB/dpdump/hash/FULL_EXPORT.dmp
+docker cp /mnt/path/to/FULL_EXPORT.dmp oracle193:/opt/oracle/admin/ORCLCDB/dpdump/hash/FULL_EXPORT.dmp
 ```
 
 provided all paths already exist ( `select * from dba_directories` ). Then run `docker exec -it containername bash` and use `impdp` as you normally would.

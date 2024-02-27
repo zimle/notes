@@ -685,31 +685,16 @@ services:
   postgresql:
     container_name: postgres15
     image: postgres:15.2-bullseye
-    command:
-      [
-        "postgres",
-        "-c",
-        "log_checkpoints=on",
-        "-c",
-        "session_preload_libraries=auto_explain",
-        "-c",
-        "auto_explain.log_analyze=on",
-        "-c",
-        "auto_explain.log_buffers=on",
-        "-c",
-        "auto_explain.log_min_duration=1000", # ms
-        "-c",
-        "auto_explain.auto_explain.log_wal=on",
-        "-c",
-        "auto_explain.log_verbose=on",
-        "-c",
-        "auto_explain.log_nested_statements=on",
-        # Run CREATE EXTENSION IF NOT EXISTS pg_stat_statements; after first database setup
-        "-c",
-        "shared_preload_libraries=pg_stat_statements",
-        "-c",
-        "log_destination=stderr"
-      ]
+    command: >
+        postgres
+        -c log_checkpoints=on
+        -c log_destination=stderr
+        -c shared_preload_libraries='pg_stat_statements,auto_explain'
+        -c pg_stat_statements.track=all",
+        -c auto_explain=on",
+        -c auto_explain.log_min_duration=1000ms
+        -c auto_explain.log_analyze=true
+        -c auto_explain.log_buffers=true
     restart: always
     environment:
       POSTGRES_USER: postgres

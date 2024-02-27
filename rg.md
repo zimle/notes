@@ -13,4 +13,6 @@ rg -i FoO
 rg -N foo
 # also search in files ignored by git
 rg --no-ingore foo
+# Only list matched files (useful when piping to other commands):
+rg --files-with-matches regular_expression
 ```

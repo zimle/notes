@@ -176,6 +176,16 @@ sed 's/old/new/gI'
 sed -E 's/([[:digit:]]),([[:digit:]])/\1.\2/g'
 ```
 
+### Examples
+
+```bash
+# remove the last 15 characters before file suffix (assumed 4 characters with dot) of a string
+# also see https://unix.stackexchange.com/questions/303295/deleting-the-second-to-last-character-in-each-line-with-sed
+sed 's/.\{15\}\(.\{4\}\)$/\1/'
+# remove last 15 characters before file suffix (assumed 4 characters with dot) of all file names within folder
+for file in *; do mv "$file" "$(echo "$file" | sed 's/.\{15\}\(.\{4\}\)$/\1/')"; done
+```
+
 ## cdpath
 
 Shells like the bash often provide a special path for changing directories: `$CDPATH`.
@@ -209,6 +219,18 @@ pwd
 ```
 
 Note that even `export CDPATH=$CDPATH:".."` works, meaning that you always can jump into a "sibling" directory.
+
+## SCP
+
+`scp` is a cli tool to enable file transfer between client and server.
+Example:
+
+```bash
+# copy all files from remote folder/home/user/my/folder/
+scp -r user@10.111.7.35:/home/user/my/folder/. .
+# copy directory `folder` and all files recursively from remote folder/home/user/my/folder/ to current folder
+scp -r user@10.111.7.35:/home/user/my/folder/ .
+```
 
 ## Trivia
 

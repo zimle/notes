@@ -53,7 +53,14 @@ See also the [official page](https://docs.docker.com/storage/volumes/#back-up-re
     docker run --rm --volumes-from my_store_container -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /dbdata
     ```
 
-## Move docker-desktop-data to another device on Windows with WSL2
+## Docker Desktop
+
+### Diagnostics
+
+Docker-Desktop comes with some diagnostic tools that reside in `C:\Program Files\Docker\Docker\resources\com.docker.diagnose.exe`, e.g. `com.docker.diagnose.exe check`.
+Also see the [official docs](https://docs.docker.com/desktop/troubleshoot/overview/).
+
+### Move docker-desktop-data to another device
 
 This recipe is taken from [kimcuonthenet](https://dev.to/kimcuonthenet/move-docker-desktop-data-distro-out-of-system-drive-4cg2) resp. [Stackoverflow](https://stackoverflow.com/questions/40465979/change-docker-native-images-location-on-windows-10-pro)
 

@@ -14,4 +14,4 @@ This instruction is copied from [equiman](https://dev.to/equiman/move-wsl-file-s
 
 ## WSL does not boot
 
-If `wsl` hangs (even `wsl -l -v`), killing the processes of `Windows Subsystem for Linux` in the `Task Manager` and restarting wsl (e.g. via starting the disto) *might* help.
+If `wsl` hangs (even `wsl -l -v`), killing the processes of `Windows Subsystem for Linux` in the `Task Manager` and restarting wsl (e.g. via starting the distro) *might* help.
