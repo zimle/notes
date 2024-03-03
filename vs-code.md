@@ -12,6 +12,7 @@
 - If having a window open with diffs:
   - next change: `ALT+F5`
   - previous change: `SHIFT+ALT+F5`
+- Show markdown preview `CTRL+SHIFT+V`
 
 ## Debugging plugins
 

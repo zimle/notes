@@ -588,6 +588,8 @@ Another way:
 
 ## Links
 
+- [anonymization](https://tembo.io/blog/anon-dump/)
+
 ### Books
 
 - [posgrespro](https://postgrespro.com/blog/pgsql/5969741)

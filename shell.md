@@ -170,7 +170,7 @@ sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
 Here are some other common use cases
 
 ```bash
-# replace old with new for every case *in*-sensitive match 
+# replace old with new for every case *in*-sensitive match
 sed 's/old/new/gI'
 # replace comma between to digits by decimal point
 sed -E 's/([[:digit:]]),([[:digit:]])/\1.\2/g'
@@ -232,6 +232,25 @@ scp -r user@10.111.7.35:/home/user/my/folder/. .
 scp -r user@10.111.7.35:/home/user/my/folder/ .
 ```
 
+## PDFs
+
+To shrink the size of a pdf, use the [following command](https://askubuntu.com/questions/113544/how-can-i-reduce-the-file-size-of-a-scanned-pdf-file)
+
+```bash
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook \
+-dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf
+```
+
+Summary of `-dPDFSETTINGS`:
+
+- `-dPDFSETTINGS=/screen` lower quality, smaller size. (72 dpi)
+- `-dPDFSETTINGS=/ebook` for better quality, but slightly larger pdfs. (150 dpi)
+- `-dPDFSETTINGS=/prepress` output similar to Acrobat Distiller "Prepress Optimized" setting (300 dpi)
+- `-dPDFSETTINGS=/printer` selects output similar to the Acrobat Distiller "Print Optimized" setting (300 dpi)
+- `-dPDFSETTINGS=/default` selects output intended to be useful across a wide variety of uses, possibly at the expense of a larger output file
+
+Also see [this](https://ghostscript.readthedocs.io/en/latest/VectorDevices.html#controls-and-features-specific-to-postscript-and-pdf-input) and [this](https://ghostscript.readthedocs.io/en/latest/VectorDevices.html#distiller-parameters).
+
 ## Trivia
 
 - find all classes-folder (windows) and using [rust version of find](https://github.com/sharkdp/fd):
@@ -252,3 +271,9 @@ scp -r user@10.111.7.35:/home/user/my/folder/ .
     # via wget
     wget https://my-site.com/my-file.tar.gz
     ```
+
+- find number of cpu cores: `nproc`
+
+- find about memory usage: `free` (or `free -m` if numbers in MB)
+
+- use range in for loop: `for i in {1..20}; do echo "$i"; done`

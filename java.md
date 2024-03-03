@@ -174,6 +174,95 @@ Arrays differ from lists in two fundamental ways:
 
 In summary, arrays and lists do not mix well. As type safety on compile time is much more precious, prefer lists over arrays if not *proven* to be a performance leak.
 
+### Item 31: Use bounded wildcatds to increase API-flexibility
+
+Long story short: As the title suggests, use bounded wildcards (`<? extends T>` resp. `<? super T>` to increase API flexibility).
+
+As a simple example:
+
+```java
+static void FruitSalad makeFruitSaladNoWildCard(List<Fruit> fruits) { // does not use wildcard
+    return fruits.stream().map(Fruit::slice).reduce(new FruitSalad(), (salad, slices) -> salad.add(slices));
+}
+
+static void FruitSalad makeFruitSaladWithWildCard(List<? extendsFruit> fruits) { // uses wildcard
+    return fruits.stream().map(Fruit::slice).reduce(new FruitSalad(), (salad, slices) -> salad.add(slices));
+}
+
+List<Banana> bananas = buyBananas();
+makeFruitSaladNoWildCard(bananas); // won't compile as generics are invariant and not covariant as arrays, see Item 28
+makeFruitSaladWithWildCard(bananas); // will compile
+```
+
+A more advanced scenario is comparing the following signature:
+
+```java
+// first guess, but not as flexible as one would wish
+static <T extends Comparable<T>> T max(List<T> list)
+// most flexible version
+static <T extends Comparable<? super T>> T max(List<? extends T> list)
+```
+
+So what is the difference?
+Recall the following interface definitions as well as the compareTo method of the `Integer` class:
+
+```java
+public interface ScheduledFuture<V> extends Delayed, Future<V> {}
+public interface Delayed extends Comparable<Delayed> {
+   long getDelay(TimeUnit var1);
+}
+// from Integer class
+@Override
+public int compareTo(Integer anotherInteger) {
+    return compare(this.value, anotherInteger.value);
+}
+```
+
+With the first version, we could obviously apply the first `max` function to the interface `Delayed`, as `Delayed extends Comparable<Delayed>` holds and we would put in a List of `Delayed`.
+But for `ScheduledFuture`, this is not true. We have to do two things:
+
+1. Our method produces a `T` object, so it should be allowed for all classes that extend `T`, i.e. we need to allow `List<? extends T>` as the method argument. Thus, we can put in a list of `ScheduledFuture`.
+1. The max function will need to compare the objects in the list. Therefore, our `?` type has to be comparable. This is guaranteed if `T` is a supertype of `?`.
+
+Example from [Generics FAQ](http://www.angelikalanger.com/GenericsFAQ/FAQSections/TypeArguments.html#FAQ103):
+
+```java
+public class Collections {
+  public static <T> void copy( List<? super T> dest, List<? extends T> src) {  // bounded wildcard parameterized types
+      for (int i=0; i < src.size(); i++)
+        dest.set(i, src.get(i));
+  }
+}
+```
+
+The upshot is the `PECS` ("Producer Extends, Consumer Super") rule (taken from <https://stackoverflow.com/questions/4343202/difference-between-super-t-and-extends-t-in-java>):
+
+- "Producer Extends" - If you need a List to produce T values (you want to read Ts from the list), you need to declare it with ? extends T, e.g. List<? extends Integer>. But you cannot add to this list.
+
+- "Consumer Super" - If you need a List to consume T values (you want to write Ts into the list), you need to declare it with ? super T, e.g. List<? super Integer>. But there are no guarantees what type of object you may read from this list.
+
+- If you need to both read from and write to a list, you need to declare it exactly with no wildcards, e.g. List<Integer>.
+
+## Value-based Classes
+
+From the [oracle docs](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/doc-files/ValueBased.html):
+
+>Some classes, such as `java.lang.Integer` and `java.time.LocalDate`, are *value-based*. A value-based class has the following properties:
+>
+> - the class declares only final instance fields (though these may contain references to mutable objects);
+> - the class's implementations of equals, hashCode, and toString compute their results solely from the values of the class's instance fields (and the members of the objects they reference), not from the instance's identity;
+> - the class's methods treat instances as freely substitutable when equal, meaning that interchanging any two instances x and y that are equal according to equals() produces no visible change in the behavior of the class's methods;
+> - the class performs no synchronization using an instance's monitor;
+> - the class does not declare (or has deprecated any) accessible constructors;
+> - the class does not provide any instance creation mechanism that promises a unique identity on each method call-in particular, any factory method's contract must allow for the possibility that if two independently-produced instances are equal according to equals(), they may also be equal according to ==;
+>    -the class is final, and extends either Object or a hierarchy of abstract classes that declare no instance fields or instance initializers and whose constructors are empty.
+>
+>When two instances of a value-based class are equal (according to `equals`), a program should not attempt to distinguish between their identities, whether directly via reference equality or indirectly via an appeal to synchronization, identity hashing, serialization, or any other identity-sensitive mechanism.
+>
+>Synchronization on instances of value-based classes is strongly discouraged, because the programmer cannot guarantee exclusive ownership of the associated monitor.
+>
+>Identity-related behavior of value-based classes may change in a future release. For example, synchronization may fail.
+
 ## Trivia
 
 - to set the Java Home Path for at least Eclipse projects like the IDE or Memory Analyzer, use the `vm` argument in the `ini` file:

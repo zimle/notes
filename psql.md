@@ -23,8 +23,6 @@ To circumvent this, either
 
 ## Autocommit
 
-/mnt/d/projects/gb-reengineering/spring-batch-prototype/env/sql/schema-postgresql.sql
-
 ```sql
 -- see within psql session whether autocommit is on
 \echo :AUTOCOMMIT
@@ -39,6 +37,19 @@ To circumvent this, either
 psql -h localhost -U my_user -d my_db -f my/relative/or/absolute/path.sql
 -- from session
 \i /my/absolute/path
+```
+
+## Writing results to a file
+
+To write all query results to a file, use `\o`:
+
+```sql
+-- tell psql to write all following query results to the file my-results.txt
+\o /home/my-user/pg-files/my-results.txt
+select * from test1;
+select * from test2;
+-- tell psql to stop writing to file and ust stdout
+\o
 ```
 
 ## Trivia
