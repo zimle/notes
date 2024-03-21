@@ -174,6 +174,8 @@ Here are some other common use cases
 sed 's/old/new/gI'
 # replace comma between to digits by decimal point
 sed -E 's/([[:digit:]]),([[:digit:]])/\1.\2/g'
+# append text at end of file / stdout
+sed '$aThis is the last line'
 ```
 
 ### Examples
@@ -184,6 +186,26 @@ sed -E 's/([[:digit:]]),([[:digit:]])/\1.\2/g'
 sed 's/.\{15\}\(.\{4\}\)$/\1/'
 # remove last 15 characters before file suffix (assumed 4 characters with dot) of all file names within folder
 for file in *; do mv "$file" "$(echo "$file" | sed 's/.\{15\}\(.\{4\}\)$/\1/')"; done
+```
+
+## locate
+
+`locate` is an extremely useful command to search files over the whole file system.
+It stores all files in a database.
+Note that it originates from [mlocate](https://wiki.gentoo.org/wiki/Mlocate), but [plocate](https://plocate.sesse.net/) seems to be a more modern and efficient version with the same API.
+[plocate](https://plocate.sesse.net/) replaces `mlocate` in `Ubuntu` since `22.04 LTS` (i.e. `mlocate` is a mere wrapper around `plocaet`).
+
+```bash
+# install, takes a while
+sudo apt-get install plocate
+
+# commands from `tldr` 
+# Look for pattern in the database. Note: the database is recomputed periodically (usually weekly or daily):
+locate pattern
+# Look for a file by its exact filename (a pattern containing no globbing characters is interpreted as `*pattern*`):
+locate '*/filename'
+# Recompute the database. You need to do it if you want to find recently added files:
+sudo updatedb
 ```
 
 ## cdpath

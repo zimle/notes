@@ -448,6 +448,18 @@ From the [oracle forum](https://forums.oracle.com/ords/apexds/post/undo-vs-redo-
 
 - `REDO` is stored outside of the database, in the redo log files, and is normally totally unaccessible to a transaction.
 
+## Debugging
+
+Check [privileges](https://www.oracle.com/webfolder/technetwork/tutorials/obe/db/apex/r51/testing_and_debugging_sqldeveloper/testing_and_debugging_sqldeveloper.html#section5s1):
+
+```sql
+-- check your privileges!
+select * from user_sys_privs;
+-- grant necessary rights if needed as an sys user
+grant debug any procedure to my_user;
+grant debug connect session to my_user;
+```
+
 ## Oracle Logs einrichten
 
 - Anleitung Oracle unter <https://docs.oracle.com/cd/B28359_01/java.111/b31224/diagnose.htm>

@@ -53,6 +53,56 @@ git maintenance run --task=commit-graph --task=gc --task=incremental-repack --ta
 
 - Since [git 2.9 2016](https://stackoverflow.com/questions/14073053/find-path-to-git-hooks-directory-on-the-shell), one can config where the git hooks folder is (default `.git/hook`). Simply search in `git config --list --show-origin --show-scope` after the hook keyword
 
+## Worktree
+
+`git` has some underused feature to manage branches automatically in *different* folders: [git worktree](https://git-scm.com/docs/git-worktree).
+
+The upshot is that when switching branches, one does not have to clear up like committing a messy state, stashing untracked files etc.
+This is not necessary when the checked-out branch is another directory.
+
+Here are basic command examples (mainly taken from [tldr](https://github.com/tldr-pages/tldr)):
+
+```bash
+# Taken from TLDR
+# Create a new directory with the specified branch checked out into it:
+git worktree add path/to/directory branch
+
+# Create a new directory with a new branch checked out into it:
+git worktree add path/to/directory -b new_branch
+
+# List all the working directories attached to this repository:
+git worktree list
+
+# Remove a worktree (after deleting worktree directory):
+git worktree prune
+
+# Own notes
+# Remove worktree including directory for it as well as the branch
+git worktree remove [-f] path/to/directory && git branch -d new_branch
+```
+
+As an example, one can start the project as a directory `my-project` and name the directories according to the branches like
+
+```bash
+my-project
+|
+|- main
+|- feature
+|- hotfix
+```
+
+To create these branches, use
+
+```bash
+pwd # returns .../my-project/main
+# create new feature branch
+git worktree add ../feature -b feature
+# check out hotfix from upstream in a worktree
+git worktree add ../hotfix hotfix
+# delete hotfix worktree and branch
+git worktree remove ../hotfix && git branch -d hotfix
+```
+
 ## Hooks
 
 Hooks are a wonderful way to shift quality "to the left". There are [various hooks available](https://git-scm.com/docs/githooks), and on can see examples for them in the folder `.git/hooks`.
