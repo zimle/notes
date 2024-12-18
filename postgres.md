@@ -242,7 +242,7 @@ An Exception is the case where every row is deleted (like in `Truncate`).
 
 To free up space disk for the OS, use `VACUUM FULL`, which requires a table lock. Else, use [pg_squeeze](https://github.com/cybertec-postgresql/pg_squeeze). If `VACUUM` does not remove dead rows, see this [post](https://www.cybertec-postgresql.com/en/reasons-why-vacuum-wont-remove-dead-rows/)
 
-### Example
+### Example Vacuuming
 
 Table `my_table`:
 
@@ -285,6 +285,30 @@ from pg_catalog.pg_class;
 ```
 
 It yields around 13 GB. Then run `VACUUM FULL VERBOSE`. Afterwards, we get a size of 4013 MB.
+
+### Tuples
+
+To see how many tuples fit in one postgres page at maximum, use the following statement:
+
+```sql
+-- approx tuples per page
+select
+pg_column_size(t.*) as row_size_in_bytes,
+(8192 - 24) / pg_column_size(t.*) as rows_per_page -- (page size - page header size) / row size (all in bytes)
+from i9contract t
+limit 1
+```
+
+To get information about live and dead tuples, enable the builtin extension [pgstattuple](https://www.postgresql.org/docs/current/pgstattuple.html):
+
+```sql
+-- CREATE EXTENSION pgstattuple; do once, no restart necessary
+SELECT * FROM pgstattuple('my_table');
+```
+
+Note that `pgstattuple('my_table').tuple_len` should correspond to `select sum(pg_column_size(t.*)) from my_table t`.
+
+## Foreign Data Wrappers (FDW)
 
 ## Creating Fake data / Test data
 
@@ -510,11 +534,52 @@ The [cluster command](https://www.postgresql.org/docs/current/sql-cluster.html) 
 select * from my_table where id IN (sorted list)
 ```
 
-Usually, Postgres will take a look in an index (provided there is one). The data sits there side by side,but points to different buffers in the heap (aka. the actual table). Thus, Postgres will have to read a lot of buffers. When the table is clustered, the searched rows all sit all side by side, consuming much less buffers and thus IO as well as memory in the buffer cache. See also this article from [cybertec](https://www.cybertec-postgresql.com/en/cluster-improving-postgresql-performance/).
+Usually, Postgres will take a look in an index (provided there is one). The data sits there side by side, but points to different buffers in the heap (aka. the actual table). Thus, Postgres will have to read a lot of buffers. When the table is clustered, the searched rows all sit all side by side, consuming much less buffers and thus IO as well as memory in the buffer cache. See also this article from [cybertec](https://www.cybertec-postgresql.com/en/cluster-improving-postgresql-performance/).
 
 Note that the ordering in the heap is *not* maintained: Inserts and update will break the ordering. Consider using [fillfactor](https://www.postgresql.org/docs/current/sql-createtable.html) on the tables to enable `HOT` (heap only tuple) updates. Also see this [cybertec article](https://www.cybertec-postgresql.com/en/what-is-fillfactor-and-how-does-it-affect-postgresql-performance/).
 
 Here is a [blog article](https://www.cybertec-postgresql.com/en/unexpected-downsides-of-uuid-keys-in-postgresql/) about performance penalties if the data is not physically ordered even if everything is in memory (in the article: random UUID vs number).
+
+Statements:
+
+```sql
+-- generate DDL statements
+select
+tablename,
+concat('CLUSTER ', tablename, ' USING ', indexname, ';', chr(10),  'ANALYZE ', tablename, ';') as create_and_analyze, -- create cluster statements and do statistic
+concat('ALTER TABLE ', tablename, ' SET WITHOUT cluster;') as reset -- reset clustering (pg remembers last used index so cluster my_table would suffice; this removes the memory)
+from pg_indexes
+where 1=1
+and indexdef ilike '%my_column%' -- be careful if multiple indexes contain this column
+and tablename = 'my_table'
+
+-- check if table is clusted by an index
+SELECT
+    t.relname AS table_name,
+    i.relname AS index_name,
+    ix.indisclustered
+FROM
+    pg_class t
+JOIN
+    pg_index ix ON t.oid = ix.indrelid
+JOIN
+    pg_class i ON i.oid = ix.indexrelid
+WHERE
+    t.relname = 'my_table';
+;
+
+-- show correlation of table with columns
+SELECT
+    schemaname,
+    tablename,
+    attname AS column_name,
+    correlation
+FROM
+    pg_stats
+WHERE
+    tablename = 'my_table'
+--    AND attname = 'my_column'
+```
 
 ## Reading data
 
@@ -578,6 +643,8 @@ pg_ctl -D "C:\Program Files\PostgreSQL\9.6\data" stop
 ```cmd
 pg_ctl -D "C:\Program Files\PostgreSQL\9.6\data" restart
 ```
+
+On Linux, also try to run `/etc/init.d/postgresql restart` and so on.
 
 Another way:
 
@@ -759,3 +826,36 @@ pg_dump -U my_user my_database -t my_table --schema-only
 - When doing prepared statements, postgres does not execute the generic plan but does some [sampling](https://www.cybertec-postgresql.com/en/tech-preview-how-postgresql-12-handles-prepared-plans/): For the first 5 times, it replans the query anew (custom plan) depending on the parameters. Afterwards, it again creates a custom plan and compares its estimated planner cost against the generic plan: If postgres thinks that they perform similar, it switches to the generic plan. If not, the comparison starts for the 7th plan etc. Starting from postgres 12, the parameter `plan_cache_mode = 'force_generic_plan'` forces postgres to directly use the generic plan.
 
 - A guide recommended by [scaling postgres](https://www.scalingpostgres.com/episodes/268-faster-copy-psql-variables-backup_label-bad-encoding/) about variables from [depesz](https://www.depesz.com/2023/05/28/variables-in-psql-how-to-use-them/)
+
+- Statement to generate Java entities with
+  - field name as column name
+  - only `data_type` `numeric`, `date` and `character varying`
+  - Usage of `LocalDate`
+  - via `Builder` pattern
+
+    ```sql
+    select
+    table_name,
+    concat(
+        'select ',
+        'concat('
+        '''' || initcap(table_name),
+        '.builder().',
+        string_agg(
+            case data_type
+                when 'numeric' then concat(column_name, '( '' || coalesce(', column_name,'::text,''null'') ||'')')
+                when 'date' then concat(column_name, '( '' || case ', column_name,' when null then ''null'' else ''LocalDate.of('' || extract(year from ' || column_name || ') || '','' || extract(month from ' || column_name || ') || '','' || extract(day from ' || column_name || ') end  ||''))')
+                when 'character varying' then concat(column_name, '( '' || case when ', column_name, ' is null then ''null'' else ''"'' ||', column_name, '|| ''"'' end ||'')')
+            end,
+        '.' order by ordinal_position),
+        '.build();'')',
+        ' from ',   
+        table_name,
+        ';'
+    ) as agg
+    from information_schema.columns
+    where 1=1
+    -- and table_name = 'customer'
+    -- and column_name not in ('a', 'b')
+    group by table_name
+    ```

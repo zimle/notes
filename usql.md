@@ -237,7 +237,3 @@ concat('\copy oracle://ora_user:ora_pwd@localhost/my_sid pg://pg_user:pg_pwd@loc
 ' ''select ' || agg || ' from my_table where filter_column = \''111\''' || '''',  ' ''my_table(' || agg || ')''')
 from comma_sep
 ```
-
-## Trivia
-
--

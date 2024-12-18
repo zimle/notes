@@ -51,7 +51,7 @@ Often, gradle tasks depend on each other and it is not visible from the help fun
 # E.g. start Spring Boot application
 ./gradlew bootRun
 # stop application
-./gradlew -stop
+./gradlew --stop
 ```
 
 ## Tests

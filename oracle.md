@@ -298,6 +298,11 @@ PARALLEL (DEGREE 16);
 alter index my_index parallel noparallel;
 ```
 
+## Logs
+
+To get a list of paths for relevant logs for diagnosing problems, execute `select * from v$diag_info`.
+`ADR Home` should contain the information.
+
 ## Tablespaces / Disk usage
 
 - [reclaiming unused space in datafiles](https://dba.stackexchange.com/questions/192625/oracle-shrinking-reclaiming-free-tablespace-space) :
@@ -369,6 +374,17 @@ alter index my_index parallel noparallel;
     ```
 
     Do not forget to run the [gather stats commands](#statistics) afterwards!
+
+- Note that large objects (LOBs) will be stored in tables Oracle will create and manage itself. Those tables can be looked up via
+
+  ```sql
+    SELECT table_name, column_name -- table and column associated to LOB with given segment name
+    FROM user_lobs
+    WHERE segment_name = 'SYS_LOB0000092651C00014$$';
+  ```
+  
+  To reduce the size, fire the statement `ALTER TABLE table_name MOVE LOB(column_name) STORE AS (TABLESPACE user_space);`.
+  Do not forget to check for [unusable indexes and rebuild them](#truncate-and-partitions).
 
 ### Add DBF File
 
@@ -679,6 +695,12 @@ GRANT CONNECT,RESOURCE TO MY_NEW_USER;
 GRANT UNLIMITED TABLESPACE TO MY_NEW_USER;
 ```
 
+If the user should access other schema tables, one could go furhter with
+
+```sql
+grant SELECT on OTHER_USER.INTERESTING_TABLE to MY_NEW_USER;
+```
+
 ## External tables
 
 Sometimes, one needs to determine where Oracle reads an external table from (i.e. the file).
@@ -801,6 +823,8 @@ Useful meta-tables are `dba_directories` and `all_external_locations` (and its d
     select * from table(dbms_xplan.display(format=>'ALL'));
     ```
 
+    Be aware of this [excellent explanation](https://www.oracle.com/docs/tech/database/technical-brief-explain-the-explain-plan-052011.pdf) of Oracle Explain Plans
+
 - [FAQ](https://www.oracle.com/database/technologies/faq-jdbc.html) about oracle jdbc drivers seems to be very complete
 
 - convert unix timestamp to date time:
@@ -867,3 +891,41 @@ Useful meta-tables are `dba_directories` and `all_external_locations` (and its d
     from cols
     order by table_name
     ```
+
+- Statement to generate Java entities with
+  - field name as column name
+  - only `data_type` `NUMBER`, `DATE` and `VARCHAR2`
+  - Usage of `LocalDate`
+  - via `Builder` pattern
+
+    ```sql
+    with from_clob as (
+        select
+        table_name,
+        to_clob(
+            'select ' ||
+            '''' || initcap(lower(table_name)) ||
+            '.builder().' ||
+            rtrim(xmlagg(xmlelement(e, 
+                case data_type
+                    when 'NUMBER' then lower(column_name) || '( '' || coalesce(to_char(' || column_name || '),''null'') ||'')'
+                    when 'DATE' then lower(column_name) || '( '' || case ' || column_name || ' when null then ''null'' else ''LocalDate.of('' || extract(year from ' || column_name || ') || '','' || extract(month from ' || column_name || ') || '','' || extract(day from ' || column_name || ') end  ||''))'
+                    when 'VARCHAR2' then lower(column_name) || '( '' || case when ' || column_name || ' is null then ''null'' else ''"'' ||' || column_name || '|| ''"'' end ||'')'
+                end,
+            '.').extract('//text()') order by column_id).getclobval(), '.') ||
+            '.build();''' ||
+            ' from ' ||
+            table_name ||
+            ';'
+        ) as agg
+        from USER_TAB_COLS
+        where 1=1
+        and column_id is not null
+        -- and table_name = 'customer'
+        -- and column_name not in ('a', 'b')
+        group by table_name
+    )
+    select table_name, replace(replace(agg, CHR(38) ||'apos;', ''''), CHR(38) || 'quot;', '"') from from_clob
+    ```
+
+- Rename column: `ALTER TABLE table_name RENAME COLUMN old_column_name TO new_column_name;`

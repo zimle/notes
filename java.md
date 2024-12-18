@@ -174,7 +174,7 @@ Arrays differ from lists in two fundamental ways:
 
 In summary, arrays and lists do not mix well. As type safety on compile time is much more precious, prefer lists over arrays if not *proven* to be a performance leak.
 
-### Item 31: Use bounded wildcatds to increase API-flexibility
+### Item 31: Use bounded wildcards to increase API-flexibility
 
 Long story short: As the title suggests, use bounded wildcards (`<? extends T>` resp. `<? super T>` to increase API flexibility).
 

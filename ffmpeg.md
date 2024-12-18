@@ -15,4 +15,6 @@ ffmpeg -i "my-source-video.mp4" --ss 00:05:13 -c: copy -to 01:12:31 output-video
 # see also https://ffmpeg.org/ffmpeg-filters.html#cropdetect
 # or get preview via `ffplay -i my-source-video.mp4 -t 0.1 -vf cropdetect`
 ffmpeg -i "my-source-video.mp4" -vf crop=1824:1024:90:2 -c:a copy output-video.mp4
+# get duration of wav file
+ffmpeg -i my-source-audio.wav 2>&1 | grep "Duration"
 ```

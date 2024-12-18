@@ -12,7 +12,7 @@ rg -i FoO
 # do not print line number
 rg -N foo
 # also search in files ignored by git
-rg --no-ingore foo
+rg --no-ignore foo
 # Only list matched files (useful when piping to other commands):
 rg --files-with-matches regular_expression
 ```

@@ -39,6 +39,8 @@ psql -h localhost -U my_user -d my_db -f my/relative/or/absolute/path.sql
 \i /my/absolute/path
 ```
 
+Note that variables set either from command line via `-v out_dir=~/garbage` or in `psql` like `\set out_dir ~/garbage` will be passed to all scripts called from psql like `\i my_sql_where_out_dir_is_used.sql`.
+
 ## Writing results to a file
 
 To write all query results to a file, use `\o`:
@@ -48,9 +50,21 @@ To write all query results to a file, use `\o`:
 \o /home/my-user/pg-files/my-results.txt
 select * from test1;
 select * from test2;
--- tell psql to stop writing to file and ust stdout
+-- tell psql to stop writing to file and use stdout
 \o
 ```
+
+To use a specific format, either use `\pset format csv` (and potentially `\pset csv_fieldsep ','`) within `psql` or `psql --csv -f my_query.sql` when calling `psql` to execute a file.
+
+## Differences to Oracle's SQL*Plus
+
+For general comparison between `SQL*Plus` and `psql`, also have a look at the [Amazon documentation](https://aws.amazon.com/blogs/database/postgresql-psql-client-tool-commands-equivalent-to-oracle-sqlplus-client-tool/).
+
+|description|psql|sql*plus|comment|
+|-|-|-|-|
+|Define variable|\set AUSGABEDATEI TEMP|DEFINE AUSGABEDATEI = TEMP|-|
+|Define variable from script input|Must be provided with call like psql -v OUT="'temp'", -v IN=orig -f my_stmt.sql|DEFINE OUT = &1|Blog post postgres <https://www.depesz.com/2023/05/28/variables-in-psql-how-to-use-them/>|
+|Use variable|select :'AUSGABEDATEI';|select '&AUSGABEDATEI' from dual|quoting in psql itself might not work (?) when using \o :path:file|
 
 ## Trivia
 

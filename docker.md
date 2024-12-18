@@ -26,6 +26,15 @@ docker run --rm -i --read-only -v "$(pwd)":"$(pwd)" -w "$(pwd)" kovetskiy/mark:l
     -f file_in_current_host_directory.md
 ```
 
+To specify a constant path, it might be necessary on windows within the git bash to use `//` for root like in
+
+```bash
+docker run -it --rm \
+  -v //d/tools/whisper/:/models \
+  -v //d/tools/whisper/:/audios \
+  ghcr.io/ggerganov/whisper.cpp:main "./main -m /models/ggml-large-v3-turbo.bin -f /audios/output.wav"
+```
+
 ## Backup
 
 ### Container
