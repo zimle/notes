@@ -498,3 +498,12 @@ git commit --amend --reset-author --no-edit
 - get the content of a file in the version of another branch: `git show other-branch:path/to/desired-file.md`
 
 - apply patch changes only for a specific file: `git apply my.patch --include=my/ultra/long/java/path/to/class.java`
+
+- list files ignored by git:
+
+  ```bash
+  # --others: Show files that are not tracked by Git.
+  # --ignored: Show files that are ignored by Git.
+  # --exclude-standard: Use standard ignore rules, as defined in .gitignore and .git/info/exclude.
+  git ls-files --others --ignored --exclude-standard
+  ```

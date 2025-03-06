@@ -759,8 +759,8 @@ services:
         -c log_checkpoints=on
         -c log_destination=stderr
         -c shared_preload_libraries='pg_stat_statements,auto_explain'
-        -c pg_stat_statements.track=all",
-        -c auto_explain=on",
+        -c pg_stat_statements.track=all,
+        -c auto_explain=on,
         -c auto_explain.log_min_duration=1000ms
         -c auto_explain.log_analyze=true
         -c auto_explain.log_buffers=true
@@ -859,3 +859,39 @@ pg_dump -U my_user my_database -t my_table --schema-only
     -- and column_name not in ('a', 'b')
     group by table_name
     ```
+
+- Statement to create a Java Entity class (imports and class annotation and pks must be added manually as well as column to Java type conversion):
+
+  ```sql
+    SELECT concat(
+        'public class ' || initcap(table_name) || ' {',
+        string_agg(
+            chr(10) ||
+            '@Column(' || 
+            CASE is_nullable 
+                WHEN 'NO' THEN 'nullable = false, ' 
+                ELSE '' 
+            END || 
+            CASE data_type 
+                WHEN 'character varying' THEN 'length = ' || character_maximum_length 
+                WHEN 'numeric' THEN 'length = ' || numeric_precision || case when numeric_scale <> 0 then ', scale = ' || numeric_scale else '' end
+                ELSE '' -- beware, else null and the column will be ignored in string_agg!
+            END || ')' ||
+            chr(10) || '    private ' || 
+            CASE data_type 
+                WHEN 'character varying' THEN 'String' 
+                WHEN 'numeric' THEN 
+                    CASE numeric_scale 
+                        WHEN 0 THEN 'int' 
+                        ELSE 'double' 
+                    END 
+                WHEN 'date' THEN 'LocalDate' 
+            END || ' ' || replace(column_name, '_', '') || ';',
+            chr(10) 
+            ORDER BY ordinal_position
+        ) || chr(10) || '}'
+    )
+    FROM information_schema.columns
+    WHERE table_schema = 'my_schema' AND table_name = 'my_table'
+    GROUP BY table_name;
+  ```

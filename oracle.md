@@ -708,6 +708,23 @@ Here is a [blog post](https://mikesmithers.wordpress.com/2017/05/22/dude-wheres-
 
 Useful meta-tables are `dba_directories` and `all_external_locations` (and its derivatives `user`, `dba`).
 
+## DB Links
+
+Access other oracle database by link.
+
+```sql
+-- get available links
+select * from user_db_links; -- all_db_links, dba_db_links
+-- create data link
+create database link db_link_name  --name, der spaeter in queries verwendet wird
+connect to external_user identified by 'external_user_pw'
+using '10.100.xxx.xx:1521/ABIT'; -- or tnsnames.ora connection name
+-- drop data link
+drop database link db_link_name;
+-- test data link
+select * FROM table_from_other_database@db_link_name fetch first 10 rows only;
+```
+
 ## Tips setting up an Oracle database
 
 - Check the autoextend of the data files. The standard of 160 bytes is far too low. Try something like
@@ -929,3 +946,12 @@ Useful meta-tables are `dba_directories` and `all_external_locations` (and its d
     ```
 
 - Rename column: `ALTER TABLE table_name RENAME COLUMN old_column_name TO new_column_name;`
+
+- create select columns for all columns except given ones:
+
+    ```sql
+    select listagg(column_name, ', ')
+    from user_tab_cols
+    where table_name = 'MY_TABLE'
+    and column_name not in ('NASTY_COLUMN', 'IRRELEVANT_COLUMN')
+    ```

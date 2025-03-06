@@ -38,6 +38,7 @@ or inserting some macros like table of contents
 I run it via go (it is just a `go install github.com/kovetskiy/mark@latest` and adding paths) and
 
 ```bash
+# Hosted version
 mark --mermaid-provider mermaid-go \
     --title-from-h1 \
     --drop-h1 \
@@ -46,7 +47,19 @@ mark --mermaid-provider mermaid-go \
     --target-url https://my.base.confluence.url.com/ \
     -u user \
     -p pw \
-    --dry-run \
+    --dry-run \ # remove for actually pushing
+    -f my_folder/*.md
+
+# Cloud version
+mark --mermaid-provider mermaid-go \
+    --title-from-h1 \
+    --drop-h1 \
+    --minor-edit \
+    --space "my-space" \
+    --base-url https://my-company.atlassian.net/wiki/ \ # wiki seems to be important
+    -u user \
+    -p token \ # token is important, create in UI via Manage Account -> Security
+    --dry-run \ # remove for actually pushing
     -f my_folder/*.md
 ```
 
